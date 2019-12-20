@@ -11,8 +11,20 @@ pub fn int() -> Decoder(Int) {
   Decoder(dynamic.int)
 }
 
-pub fn decode_dynamic(dynamic: Dynamic, decoder: Decoder(a)) -> Result(a, String) {
-  let Decoder(decode_function) = decoder
+pub fn map(decoder: Decoder(a), fun: fn(a) -> b) -> Decoder(b) {
+  let Decoder(decode_fun) = decoder
 
-  decode_function(dynamic)
+  let mapped_fun =
+    fn(dynamic) {
+      decode_fun(dynamic)
+      |> result.map(_, fun)
+    }
+
+  Decoder(mapped_fun)
+}
+
+pub fn decode_dynamic(dynamic: Dynamic, decoder: Decoder(a)) -> Result(a, String) {
+  let Decoder(decode_fun) = decoder
+
+  decode_fun(dynamic)
 }
