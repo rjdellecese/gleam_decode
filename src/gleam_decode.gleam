@@ -3,6 +3,7 @@ import gleam/dynamic.{Dynamic}
 import gleam/result
 import gleam/string as string_mod
 
+
 // Types
 
 // TODO: Have a proper Error type? `gleam_stdlib/dynamic` may need the same.
@@ -12,6 +13,7 @@ pub enum Decoder(a) {
     fn(Dynamic) -> Result(a, String)
   )
 }
+
 
 // Primitives
 
@@ -34,6 +36,7 @@ pub fn float() -> Decoder(Float) {
 pub fn string() -> Decoder(String) {
   Decoder(dynamic.string)
 }
+
 
 // Data structures
 
@@ -125,27 +128,6 @@ pub fn map2(decoder1: Decoder(a), decoder2: Decoder(b), fun: fn(a, b) -> value) 
   Decoder(mapped_fun)
 }
 
-
-// Pipelining
-
-// TODO: Won't actually want to name this function `succeed`.
-pub fn succeed(a: a) -> Decoder(a) {
-  Decoder(fn(_dynamic) { Ok(a) })
-}
-
-pub fn custom(current_decoder: Decoder(fn(a) -> b), next_decoder: Decoder(a)) -> Decoder(b) {
-  let pipe_fun =
-    fn(a: a, f: fn(a) -> b) {
-      f(a)
-    }
-
-  map2(next_decoder, current_decoder, pipe_fun)
-}
-
-// NOTE: Uses `atom_field` at the moment.
-pub fn required(current_decoder: Decoder(fn(a) -> b), next_decoder: Decoder(a), named: String) -> Decoder(b) {
-  custom(current_decoder, atom_field(next_decoder, named))
-}
 
 // Decoding
 

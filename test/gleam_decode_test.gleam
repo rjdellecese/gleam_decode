@@ -9,9 +9,7 @@ import gleam_decode.{
   int,
   map,
   map2,
-  required,
-  string,
-  succeed
+  string
 }
 import gleam/atom as atom_mod
 import gleam/dynamic.{Dynamic}
@@ -113,24 +111,6 @@ pub fn map2_test() {
 
   struct(1, "string")
   |> dynamic.from
-  |> decode_dynamic(_, pair_decoder)
-  |> expect.equal(_, Ok(Pair(1, "string")))
-}
-
-pub fn required_test() {
-  let pair_decoder =
-    succeed(Pair)
-    |> required(_, string(), "string")
-    |> required(_, int(), "int")
-
-  let string_atom = atom_mod.create_from_string("string")
-  let int_atom = atom_mod.create_from_string("int")
-  let pair_map =
-    map_mod.new
-    |> map_mod.insert(_, string_atom, "string")
-    |> map_mod.insert(_, int_atom, 1)
-
-  pair_map
   |> decode_dynamic(_, pair_decoder)
   |> expect.equal(_, Ok(Pair(1, "string")))
 }
