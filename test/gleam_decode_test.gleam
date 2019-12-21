@@ -1,5 +1,6 @@
 import gleam_decode.{
   atom,
+  atom_field,
   bool,
   decode_dynamic,
   element,
@@ -71,6 +72,16 @@ pub fn field_test() {
   |> map_mod.insert(_, string_field_atom, "string")
   |> dynamic.from
   |> decode_dynamic(_, string_field_decoder)
+  |> expect.equal(_, Ok("string"))
+}
+
+pub fn atom_field_test() {
+  let string_field_atom = atom_mod.create_from_string("string_field")
+
+  map_mod.new()
+  |> map_mod.insert(_, string_field_atom, "string")
+  |> dynamic.from
+  |> decode_dynamic(_, atom_field(string(), "string_field"))
   |> expect.equal(_, Ok("string"))
 }
 
