@@ -40,8 +40,7 @@ pub fn string() -> Decoder(String) {
 
 // Data structures
 
-// TODO: Swap argument order.
-pub fn element(decoder: Decoder(value), position: Int) -> Decoder(value) {
+pub fn element(position: Int, decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
   let fun =
@@ -54,8 +53,7 @@ pub fn element(decoder: Decoder(value), position: Int) -> Decoder(value) {
   Decoder(fun)
 }
 
-// TODO: Swap argument order.
-pub fn field(decoder: Decoder(value), named: a) -> Decoder(value) {
+pub fn field(named: a, decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
   let fun =
@@ -77,8 +75,7 @@ pub fn field(decoder: Decoder(value), named: a) -> Decoder(value) {
 // Saves you the trouble of having to handle atom creation/error handling
 // yourself.
 
-// TODO: Swap argument order.
-pub fn atom_field(decoder: Decoder(value), named: String) -> Decoder(value) {
+pub fn atom_field(named: String, decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
   let named_result =
     atom_mod.from_string(named)
@@ -105,10 +102,7 @@ pub fn atom_field(decoder: Decoder(value), named: String) -> Decoder(value) {
 //
 // TODO: Explain what to do if you run out of maps.
 
-// TODO: Move function arguments (`fun`) to first argument position for all map
-// functions.
-
-pub fn map(decoder: Decoder(a), fun: fn(a) -> value) -> Decoder(value) {
+pub fn map(fun: fn(a) -> value, decoder: Decoder(a)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
   let mapped_fun =
@@ -122,9 +116,9 @@ pub fn map(decoder: Decoder(a), fun: fn(a) -> value) -> Decoder(value) {
 }
 
 pub fn map2(
+  fun: fn(a, b) -> value,
   decoder1: Decoder(a),
-  decoder2: Decoder(b),
-  fun: fn(a, b) -> value
+  decoder2: Decoder(b)
 ) -> Decoder(value)
 {
   let Decoder(decode_fun1) = decoder1
@@ -146,10 +140,10 @@ pub fn map2(
 }
 
 pub fn map3(
+  fun: fn(a, b, c) -> value,
   decoder1: Decoder(a),
   decoder2: Decoder(b),
-  decoder3: Decoder(c),
-  fun: fn(a, b, c) -> value
+  decoder3: Decoder(c)
 ) -> Decoder(value)
 {
   let Decoder(decode_fun1) = decoder1
@@ -174,11 +168,11 @@ pub fn map3(
 }
 
 pub fn map4(
+  fun: fn(a, b, c, d) -> value,
   decoder1: Decoder(a),
   decoder2: Decoder(b),
   decoder3: Decoder(c),
-  decoder4: Decoder(d),
-  fun: fn(a, b, c, d) -> value
+  decoder4: Decoder(d)
 ) -> Decoder(value)
 {
   let Decoder(decode_fun1) = decoder1
@@ -206,12 +200,12 @@ pub fn map4(
 }
 
 pub fn map5(
+  fun: fn(a, b, c, d, e) -> value,
   decoder1: Decoder(a),
   decoder2: Decoder(b),
   decoder3: Decoder(c),
   decoder4: Decoder(d),
-  decoder5: Decoder(e),
-  fun: fn(a, b, c, d, e) -> value
+  decoder5: Decoder(e)
 ) -> Decoder(value)
 {
   let Decoder(decode_fun1) = decoder1
@@ -242,13 +236,13 @@ pub fn map5(
 }
 
 pub fn map6(
+  fun: fn(a, b, c, d, e, f) -> value,
   decoder1: Decoder(a),
   decoder2: Decoder(b),
   decoder3: Decoder(c),
   decoder4: Decoder(d),
   decoder5: Decoder(e),
-  decoder6: Decoder(f),
-  fun: fn(a, b, c, d, e, f) -> value
+  decoder6: Decoder(f)
 ) -> Decoder(value)
 {
   let Decoder(decode_fun1) = decoder1
@@ -282,14 +276,14 @@ pub fn map6(
 }
 
 pub fn map7(
+  fun: fn(a, b, c, d, e, f, g) -> value,
   decoder1: Decoder(a),
   decoder2: Decoder(b),
   decoder3: Decoder(c),
   decoder4: Decoder(d),
   decoder5: Decoder(e),
   decoder6: Decoder(f),
-  decoder7: Decoder(g),
-  fun: fn(a, b, c, d, e, f, g) -> value
+  decoder7: Decoder(g)
 ) -> Decoder(value)
 {
   let Decoder(decode_fun1) = decoder1
@@ -326,6 +320,7 @@ pub fn map7(
 }
 
 pub fn map8(
+  fun: fn(a, b, c, d, e, f, g, h) -> value,
   decoder1: Decoder(a),
   decoder2: Decoder(b),
   decoder3: Decoder(c),
@@ -333,8 +328,7 @@ pub fn map8(
   decoder5: Decoder(e),
   decoder6: Decoder(f),
   decoder7: Decoder(g),
-  decoder8: Decoder(h),
-  fun: fn(a, b, c, d, e, f, g, h) -> value
+  decoder8: Decoder(h)
 ) -> Decoder(value)
 {
   let Decoder(decode_fun1) = decoder1

@@ -57,7 +57,7 @@ pub fn string_test() {
 pub fn element_test() {
   struct(1, 2.3, "string")
   |> dynamic.from
-  |> decode_dynamic(_, element(float(), 1))
+  |> decode_dynamic(_, element(1, float()))
   |> expect.equal(_, Ok(2.3))
 }
 
@@ -65,8 +65,8 @@ pub fn field_test() {
   let string_field_atom = atom_mod.create_from_string("string_field")
   let string_field_decoder =
     field(
-      string(),
-      string_field_atom
+      string_field_atom,
+      string()
     )
 
   map_mod.new()
@@ -82,13 +82,13 @@ pub fn atom_field_test() {
   map_mod.new()
   |> map_mod.insert(_, string_field_atom, "string")
   |> dynamic.from
-  |> decode_dynamic(_, atom_field(string(), "string_field"))
+  |> decode_dynamic(_, atom_field("string_field", string()))
   |> expect.equal(_, Ok("string"))
 }
 
 pub fn map_test() {
   let int_to_string_decoder =
-    int() |> map(_, int_mod.to_string)
+    map(int_mod.to_string, int())
 
   1
   |> dynamic.from
@@ -105,9 +105,9 @@ pub fn map2_test() {
   let pair_decoder =
     Pair
     |> map2(
-      element(int(), 0),
-      element(string(), 1),
-      _
+      _,
+      element(0, int()),
+      element(1, string())
     )
 
   struct(1, "string")
