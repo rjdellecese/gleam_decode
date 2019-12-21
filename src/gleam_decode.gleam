@@ -40,7 +40,7 @@ pub fn string() -> Decoder(String) {
 
 // Data structures
 
-pub fn element(position: Int, decoder: Decoder(value)) -> Decoder(value) {
+pub fn element(at position: Int, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
   let fun =
@@ -53,7 +53,7 @@ pub fn element(position: Int, decoder: Decoder(value)) -> Decoder(value) {
   Decoder(fun)
 }
 
-pub fn field(named: a, decoder: Decoder(value)) -> Decoder(value) {
+pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
   let fun =
@@ -75,7 +75,7 @@ pub fn field(named: a, decoder: Decoder(value)) -> Decoder(value) {
 // Saves you the trouble of having to handle atom creation/error handling
 // yourself.
 
-pub fn atom_field(named: String, decoder: Decoder(value)) -> Decoder(value) {
+pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
   let named_result =
     atom_mod.from_string(named)
@@ -102,7 +102,7 @@ pub fn atom_field(named: String, decoder: Decoder(value)) -> Decoder(value) {
 //
 // TODO: Explain what to do if you run out of maps.
 
-pub fn map(fun: fn(a) -> value, decoder: Decoder(a)) -> Decoder(value) {
+pub fn map(fun: fn(a) -> value, with decoder: Decoder(a)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
   let mapped_fun =
@@ -370,7 +370,7 @@ pub fn map8(
 
 // Decoding
 
-pub fn decode_dynamic(dynamic: Dynamic, decoder: Decoder(a)) -> Result(a, String) {
+pub fn decode_dynamic(dynamic: Dynamic, with decoder: Decoder(a)) -> Result(a, String) {
   let Decoder(decode_fun) = decoder
 
   decode_fun(dynamic)
