@@ -23,6 +23,7 @@ pub fn bool_test() {
   |> decode_dynamic(_, bool())
   |> expect.equal(_, Ok(True))
 }
+
 pub fn atom_test() {
   let my_atom = atom_mod.create_from_string("my_atom")
 

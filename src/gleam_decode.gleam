@@ -40,6 +40,7 @@ pub fn string() -> Decoder(String) {
 
 // Data structures
 
+// TODO: Swap argument order.
 pub fn element(decoder: Decoder(value), position: Int) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
@@ -53,6 +54,7 @@ pub fn element(decoder: Decoder(value), position: Int) -> Decoder(value) {
   Decoder(fun)
 }
 
+// TODO: Swap argument order.
 pub fn field(decoder: Decoder(value), named: a) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
@@ -74,6 +76,8 @@ pub fn field(decoder: Decoder(value), named: a) -> Decoder(value) {
 //
 // Saves you the trouble of having to handle atom creation/error handling
 // yourself.
+
+// TODO: Swap argument order.
 pub fn atom_field(decoder: Decoder(value), named: String) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
   let named_result =
@@ -98,6 +102,11 @@ pub fn atom_field(decoder: Decoder(value), named: String) -> Decoder(value) {
 
 
 // Mapping
+//
+// TODO: Explain what to do if you run out of maps.
+
+// TODO: Move function arguments (`fun`) to first argument position for all map
+// functions.
 
 pub fn map(decoder: Decoder(a), fun: fn(a) -> value) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
