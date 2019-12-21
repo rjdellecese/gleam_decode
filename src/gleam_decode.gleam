@@ -57,6 +57,16 @@ pub fn map2(decoder1: Decoder(a), decoder2: Decoder(b), fun: fn(a, b) -> value) 
   Decoder(mapped_fun)
 }
 
+
+pub fn custom(next_decoder: Decoder(a), current_decoder: Decoder(fn(a) -> b)) -> Decoder(b) {
+  let pipe_fun =
+    fn(a: a, f: fn(a) -> b) {
+      f(a)
+    }
+
+  map2(next_decoder, current_decoder, pipe_fun)
+}
+
 pub fn decode_dynamic(dynamic: Dynamic, decoder: Decoder(a)) -> Result(a, String) {
   let Decoder(decode_fun) = decoder
 
