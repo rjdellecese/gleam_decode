@@ -1,8 +1,11 @@
-import gleam/atom.{Atom}
+import gleam/atom.{Atom} as atom_mod
 import gleam/dynamic.{Dynamic}
 import gleam/result
+import gleam/string as string_mod
 
-// Decoder
+// Types
+
+// TODO: Have a proper Error type? `gleam_stdlib/dynamic` may need the same.
 
 pub enum Decoder(a) {
   Decoder(
@@ -54,6 +57,36 @@ pub fn field(decoder: Decoder(value), named: a) -> Decoder(value) {
     fn(dynamic_) {
       dynamic_
       |> dynamic.field(_, named)
+      |> result.then(_, decode_fun)
+    }
+
+  Decoder(fun)
+}
+
+// Takes a field name as a string and tries to turn it into an atom in order to
+// access it. If the atom doesn't exist, the field doesn't either! And in that
+// case the decoder will fail.
+//
+// TODO: Examples
+//
+// Saves you the trouble of having to handle atom creation/error handling
+// yourself.
+pub fn atom_field(decoder: Decoder(value), named: String) -> Decoder(value) {
+  let Decoder(decode_fun) = decoder
+  let named_result =
+    atom_mod.from_string(named)
+    |> result.map_error(
+      _,
+      fn(_a) {
+        string_mod.append("No atom field by name of `", named)
+        |> string_mod.append(_, "` found")
+      }
+    )
+
+  let fun =
+    fn(dynamic_) {
+      named_result
+      |> result.then(_, dynamic.field(dynamic_, _))
       |> result.then(_, decode_fun)
     }
 
