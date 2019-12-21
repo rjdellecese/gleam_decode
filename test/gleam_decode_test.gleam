@@ -62,28 +62,21 @@ pub fn element_test() {
 }
 
 pub fn field_test() {
-  let string_field_atom = atom_mod.create_from_string("string_field")
-  let string_field_decoder =
-    field(
-      string_field_atom,
-      string()
-    )
-
   map_mod.new()
-  |> map_mod.insert(_, string_field_atom, "string")
+  |> map_mod.insert(_, "key", "value")
   |> dynamic.from
-  |> decode_dynamic(_, string_field_decoder)
-  |> expect.equal(_, Ok("string"))
+  |> decode_dynamic(_, field("key", string()))
+  |> expect.equal(_, Ok("value"))
 }
 
 pub fn atom_field_test() {
-  let string_field_atom = atom_mod.create_from_string("string_field")
+  let key_atom = atom_mod.create_from_string("key")
 
   map_mod.new()
-  |> map_mod.insert(_, string_field_atom, "string")
+  |> map_mod.insert(_, key_atom, "value")
   |> dynamic.from
-  |> decode_dynamic(_, atom_field("string_field", string()))
-  |> expect.equal(_, Ok("string"))
+  |> decode_dynamic(_, atom_field("key", string()))
+  |> expect.equal(_, Ok("value"))
 }
 
 pub fn map_test() {
