@@ -5,13 +5,17 @@ import gleam_decode.{
   bool,
   decode_dynamic,
   element,
+  fail,
   field,
   float,
+  from_result,
   int,
   map,
   map2,
   one_of,
-  string
+  string,
+  succeed,
+  then
 }
 import gleam/atom.{Atom} as atom_mod
 import gleam/dynamic.{Dynamic}
@@ -147,28 +151,48 @@ pub fn one_of_test() {
   |> expect.equal(_, Ok(fido))
 }
 
-// pub fn then_test() {
-//   let ok_atom = atom_mod.create_from_string("ok")
-//   let error_atom = atom_mod.create_from_string("error")
-//   let everything_broke_atom = atom_mod.create_from_string("everything_broke")
-//   // Decoder (Result(String, Atom))
-//   let success_decoder = Decoder(fn(dyn) { )
-//   let failure_decoder = Decoder(atom())
-//   let ok_error_helper =
-//     fn(atom: Atom) {
-//       case atom {
-//         ok_atom -> success_decoder
-//         error_atom -> failure_decoder
-//       }
-//     }
-//   let might_fail_decoder =
-//     // Decoder(Atom)
-//     element(0, atom())
-//     |> then(ok_error_helper, _)
-//
-//   struct(ok_atom, "It worked!")
-//   |> dynamic.from
-//   |> decode_dynamic(_, might_fail_decoder)
-//   |> result.then(result.flatten)
-//   |> expect.equal(_, Ok("It worked!"))
-// }
+pub fn succeed_test() {
+  struct(1, "string")
+  |> dynamic.from
+  |> decode_dynamic(_, succeed(2.3))
+  |> expect.equal(_, Ok(2.3))
+}
+
+pub fn fail_test() {
+  struct(1, "string")
+  |> dynamic.from
+  |> decode_dynamic(_, fail("This will always fail"))
+  |> expect.equal(_, Error("This will always fail"))
+}
+
+// TODO: Use the stdlib version of this if/when it becomes available.
+fn compose(first_fun: fn(a) -> b, second_fun: fn(b) -> c) -> fn(a) -> c {
+  fn(a) {
+    first_fun(a)
+    |> second_fun
+  }
+}
+
+pub fn then_and_from_result_test() {
+  // TODO: Better example (into enum)
+  let validate_string =
+    fn(string) {
+      case string {
+        "" -> Error("String must not be empty!")
+        str -> Ok(str)
+      }
+    }
+  let valid_string_decoder =
+    string()
+    |> then(_, compose(validate_string, from_result))
+
+  ""
+  |> dynamic.from
+  |> decode_dynamic(_, valid_string_decoder)
+  |> expect.equal(_, Error("String must not be empty!"))
+
+  "string"
+  |> dynamic.from
+  |> decode_dynamic(_, valid_string_decoder)
+  |> expect.equal(_, Ok("string"))
+}

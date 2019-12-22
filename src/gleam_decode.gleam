@@ -1,5 +1,5 @@
 import gleam/atom.{Atom} as atom_mod
-import gleam/dynamic.{Dynamic}
+import gleam/dynamic.{Dynamic} as dynamic_mod
 import gleam/list
 import gleam/result
 import gleam/string as string_mod
@@ -34,7 +34,7 @@ pub enum Decoder(a) {
 // Primitives
 
 pub fn bool() -> Decoder(Bool) {
-  Decoder(dynamic.bool)
+  Decoder(dynamic_mod.bool)
 }
 
 // Note that in Erlang, values such as `undefined`, `null`, `nil`, and `none`
@@ -45,19 +45,19 @@ pub fn bool() -> Decoder(Bool) {
 //
 // TODO: Same with `ok` and `error` atoms? Or turn those into results?
 pub fn atom() -> Decoder(Atom) {
-  Decoder(dynamic.atom)
+  Decoder(dynamic_mod.atom)
 }
 
 pub fn int() -> Decoder(Int) {
-  Decoder(dynamic.int)
+  Decoder(dynamic_mod.int)
 }
 
 pub fn float() -> Decoder(Float) {
-  Decoder(dynamic.float)
+  Decoder(dynamic_mod.float)
 }
 
 pub fn string() -> Decoder(String) {
-  Decoder(dynamic.string)
+  Decoder(dynamic_mod.string)
 }
 
 
@@ -67,9 +67,9 @@ pub fn element(at position: Int, with decoder: Decoder(value)) -> Decoder(value)
   let Decoder(decode_fun) = decoder
 
   let fun =
-    fn(dynamic_) {
-      dynamic_
-      |> dynamic.element(_, position)
+    fn(dynamic) {
+      dynamic
+      |> dynamic_mod.element(_, position)
       |> result.then(_, decode_fun)
     }
 
@@ -80,9 +80,9 @@ pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
   let fun =
-    fn(dynamic_) {
-      dynamic_
-      |> dynamic.field(_, named)
+    fn(dynamic) {
+      dynamic
+      |> dynamic_mod.field(_, named)
       |> result.then(_, decode_fun)
     }
 
@@ -111,9 +111,9 @@ pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value)
     )
 
   let fun =
-    fn(dynamic_) {
+    fn(dynamic) {
       named_result
-      |> result.then(_, dynamic.field(dynamic_, _))
+      |> result.then(_, dynamic_mod.field(dynamic, _))
       |> result.then(_, decode_fun)
     }
 
@@ -122,12 +122,12 @@ pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value)
 
 // Combining
 
-fn try_decoders(dyn: Dynamic, decoders: List(Decoder(a))) -> Result(a, String) {
+fn try_decoders(dynamic: Dynamic, decoders: List(Decoder(a))) -> Result(a, String) {
   case decoders {
     [Decoder(decode_fun) | remaining_decoders] ->
-      case decode_fun(dyn) {
+      case decode_fun(dynamic) {
         Ok(val) -> Ok(val)
-        Error(_str) -> try_decoders(dyn, remaining_decoders)
+        Error(_str) -> try_decoders(dynamic, remaining_decoders)
       }
     [] -> Error("All decoders failed")
   }
@@ -141,21 +141,49 @@ pub fn one_of(decoders: List(Decoder(a))) -> Decoder(a) {
   )
 }
 
+// TODO: Use the stdlib version of this if/when it becomes available.
+fn compose(first_fun: fn(a) -> b, second_fun: fn(b) -> c) -> fn(a) -> c {
+  fn(a) {
+    first_fun(a)
+    |> second_fun
+  }
+}
 
-// pub fn then(fun: fn(a) -> Decoder(b), decoder: Decoder(a)) -> Decoder(b) {
-pub fn then(fun, decoder) -> Decoder(b) {
+// TODO: Make this private once https://github.com/gleam-lang/gleam/issues/359
+// is resolved.
+pub fn unwrap(decoder: Decoder(a)) -> fn(Dynamic) -> Result(a, String) {
   let Decoder(decode_fun) = decoder
+  decode_fun
+}
 
-  let then_fun =
+pub fn then(after decoder: Decoder(a), apply fun: fn(a) -> Decoder(b)) -> Decoder(b) {
+  let Decoder(decode_fun) = decoder
+  let unwrapped_decoder_fun = compose(fun, unwrap)
+
+  Decoder(
     fn(dynamic) {
       dynamic
       |> decode_fun
-      |> result.then(_, fun)
+      |> result.then(_, fn(a) { unwrapped_decoder_fun(a)(dynamic) })
     }
-
-  Decoder(then_fun)
+  )
 }
 
+
+pub fn succeed(a) -> Decoder(a) {
+  Decoder(fn(_dynamic) { Ok(a) })
+}
+
+pub fn fail(error: String) -> Decoder(a) {
+  Decoder(fn(_dynamic) { Error(error) })
+}
+
+pub fn from_result(result: Result(a, String)) -> Decoder(a) {
+  case result {
+    Ok(value) -> succeed(value)
+    Error(error) -> fail(error)
+  }
+}
 
 // Mapping
 //
