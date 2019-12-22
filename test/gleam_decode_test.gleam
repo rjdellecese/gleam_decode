@@ -173,26 +173,31 @@ fn compose(first_fun: fn(a) -> b, second_fun: fn(b) -> c) -> fn(a) -> c {
   }
 }
 
+enum Direction {
+  Left
+  Right
+}
+
 pub fn then_and_from_result_test() {
-  // TODO: Better example (into enum)
-  let validate_string =
+  let validate_left_or_right =
     fn(string) {
       case string {
-        "" -> Error("String must not be empty!")
-        str -> Ok(str)
+        "left" -> Ok(Left)
+        "right" -> Ok(Right)
+        _string -> Error("Neither left nor right!")
       }
     }
   let valid_string_decoder =
     string()
-    |> then(_, compose(validate_string, from_result))
+    |> then(_, compose(validate_left_or_right, from_result))
 
-  ""
+  "up"
   |> dynamic.from
   |> decode_dynamic(_, valid_string_decoder)
-  |> expect.equal(_, Error("String must not be empty!"))
+  |> expect.equal(_, Error("Neither left nor right!"))
 
-  "string"
+  "left"
   |> dynamic.from
   |> decode_dynamic(_, valid_string_decoder)
-  |> expect.equal(_, Ok("string"))
+  |> expect.equal(_, Ok(Left))
 }
