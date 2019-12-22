@@ -119,23 +119,6 @@ pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value)
   Decoder(fun)
 }
 
-// Other decoders
-
-// pub fn then(fun: fn(a) -> Decoder(b), decoder: Decoder(a)) -> Decoder(b) {
-pub fn then(fun, decoder) -> Decoder(b) {
-  let Decoder(decode_fun) = decoder
-
-  let then_fun =
-    fn(dynamic) {
-      dynamic
-      |> decode_fun
-      |> result.then(_, fun)
-    }
-
-  Decoder(then_fun)
-}
-
-
 // Mapping
 //
 // TODO: Explain what to do if you run out of maps.
