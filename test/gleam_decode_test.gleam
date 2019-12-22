@@ -10,8 +10,8 @@ import gleam_decode.{
   int,
   map,
   map2,
-  string,
-  then
+  one_of,
+  string
 }
 import gleam/atom.{Atom} as atom_mod
 import gleam/dynamic.{Dynamic}
@@ -98,9 +98,8 @@ struct Pair {
 
 pub fn map2_test() {
   let pair_decoder =
-    Pair
-    |> map2(
-      _,
+    map2(
+      Pair,
       element(0, int()),
       element(1, string())
     )
@@ -109,4 +108,41 @@ pub fn map2_test() {
   |> dynamic.from
   |> decode_dynamic(_, pair_decoder)
   |> expect.equal(_, Ok(Pair(1, "string")))
+}
+
+enum Pet {
+  Cat(name: String, poise: Int)
+  Dog(name: String, loyalty: Float)
+}
+
+pub fn one_of_test() {
+  let cat_decoder =
+    map2(
+      fn(name, poise) { Cat(name, poise) },
+      element(0, string()),
+      element(1, int())
+    )
+  let dog_decoder =
+    map2(
+      fn(name, loyalty) { Dog(name, loyalty) },
+      element(0, string()),
+      element(1, float())
+    )
+  let pet_decoder = one_of([cat_decoder, dog_decoder])
+
+  let fifi_tuple = struct("Fifi", 100)
+  let fido_tuple = struct("Fido", 67.3)
+
+  let fifi = Cat(name: "Fifi", poise: 100)
+  let fido = Dog(name: "Fido", loyalty: 67.3)
+
+  fifi_tuple
+  |> dynamic.from
+  |> decode_dynamic(_, pet_decoder)
+  |> expect.equal(_, Ok(fifi))
+
+  fido_tuple
+  |> dynamic.from
+  |> decode_dynamic(_, pet_decoder)
+  |> expect.equal(_, Ok(fido))
 }

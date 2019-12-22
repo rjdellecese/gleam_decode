@@ -1,5 +1,6 @@
 import gleam/atom.{Atom} as atom_mod
 import gleam/dynamic.{Dynamic}
+import gleam/list
 import gleam/result
 import gleam/string as string_mod
 
@@ -117,6 +118,27 @@ pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value)
     }
 
   Decoder(fun)
+}
+
+// Combining
+
+fn try_decoders(dyn: Dynamic, decoders: List(Decoder(a))) -> Result(a, String) {
+  case decoders {
+    [Decoder(decode_fun) | remaining_decoders] ->
+      case decode_fun(dyn) {
+        Ok(val) -> Ok(val)
+        Error(_str) -> try_decoders(dyn, remaining_decoders)
+      }
+    [] -> Error("All decoders failed")
+  }
+}
+
+pub fn one_of(decoders: List(Decoder(a))) -> Decoder(a) {
+  Decoder(
+    fn(dynamic) {
+      try_decoders(dynamic, decoders)
+    }
+  )
 }
 
 // Mapping
