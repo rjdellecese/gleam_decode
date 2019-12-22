@@ -14,6 +14,21 @@ pub enum Decoder(a) {
   )
 }
 
+// TODO: Add an enum for decoding success/failure, rather than using `Result`?
+// This might be useful for helping to distinguish semantically between whether
+// decoding failed or whether an external function that they called return a
+// `Result` (ok/error tuple) that might have failed. E.g.
+//
+// pub enum Decoder(s, f) {
+//   Decoder(
+//     fn(Dynamic) -> Outcome(s, f)
+//   )
+// }
+//
+// pub enum Outcome(s, f) {
+//   Success(s)
+//   Failure(f)
+// }
 
 // Primitives
 
@@ -21,6 +36,13 @@ pub fn bool() -> Decoder(Bool) {
   Decoder(dynamic.bool)
 }
 
+// Note that in Erlang, values such as `undefined`, `null`, `nil`, and `none`
+// are all atoms! In Elixir, `nil` is an atom as well.
+//
+// TODO: Maybe add convenience "primitives" for one or more of these common
+// atoms in Erlang or Elixir? E.g. `nil_atom`, `undefined_atom`, etc.
+//
+// TODO: Same with `ok` and `error` atoms? Or turn those into results?
 pub fn atom() -> Decoder(Atom) {
   Decoder(dynamic.atom)
 }
@@ -38,7 +60,7 @@ pub fn string() -> Decoder(String) {
 }
 
 
-// Data structures
+// Nested data
 
 pub fn element(at position: Int, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
@@ -72,9 +94,9 @@ pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
 //
 // TODO: Examples
 //
-// Saves you the trouble of having to handle atom creation/error handling
-// yourself.
-
+// Atoms are commonly used as map fields in Erlang and Elixir; when accessing
+// map keys that are atoms, this saves you the trouble of having to handle atom
+// creation/error handling yourself.
 pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
   let named_result =
@@ -82,7 +104,7 @@ pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value)
     |> result.map_error(
       _,
       fn(_a) {
-        string_mod.append("No atom field by name of `", named)
+        string_mod.append("No atom key by name of `", named)
         |> string_mod.append(_, "` found")
       }
     )
@@ -95,6 +117,22 @@ pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value)
     }
 
   Decoder(fun)
+}
+
+// Other decoders
+
+// pub fn then(fun: fn(a) -> Decoder(b), decoder: Decoder(a)) -> Decoder(b) {
+pub fn then(fun, decoder) -> Decoder(b) {
+  let Decoder(decode_fun) = decoder
+
+  let then_fun =
+    fn(dynamic) {
+      dynamic
+      |> decode_fun
+      |> result.then(_, fun)
+    }
+
+  Decoder(then_fun)
 }
 
 
