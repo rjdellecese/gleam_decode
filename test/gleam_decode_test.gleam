@@ -146,3 +146,29 @@ pub fn one_of_test() {
   |> decode_dynamic(_, pet_decoder)
   |> expect.equal(_, Ok(fido))
 }
+
+// pub fn then_test() {
+//   let ok_atom = atom_mod.create_from_string("ok")
+//   let error_atom = atom_mod.create_from_string("error")
+//   let everything_broke_atom = atom_mod.create_from_string("everything_broke")
+//   // Decoder (Result(String, Atom))
+//   let success_decoder = Decoder(fn(dyn) { )
+//   let failure_decoder = Decoder(atom())
+//   let ok_error_helper =
+//     fn(atom: Atom) {
+//       case atom {
+//         ok_atom -> success_decoder
+//         error_atom -> failure_decoder
+//       }
+//     }
+//   let might_fail_decoder =
+//     // Decoder(Atom)
+//     element(0, atom())
+//     |> then(ok_error_helper, _)
+//
+//   struct(ok_atom, "It worked!")
+//   |> dynamic.from
+//   |> decode_dynamic(_, might_fail_decoder)
+//   |> result.then(result.flatten)
+//   |> expect.equal(_, Ok("It worked!"))
+// }
