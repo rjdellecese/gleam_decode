@@ -63,7 +63,11 @@ pub fn string() -> Decoder(String) {
 
 // Nested data
 
-pub fn element(at position: Int, with decoder: Decoder(value)) -> Decoder(value) {
+pub fn element(
+  at position: Int,
+  with decoder: Decoder(value)
+) -> Decoder(value)
+{
   let Decoder(decode_fun) = decoder
 
   let fun =
@@ -98,7 +102,11 @@ pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
 // Atoms are commonly used as map fields in Erlang and Elixir; when accessing
 // map keys that are atoms, this saves you the trouble of having to handle atom
 // creation/error handling yourself.
-pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value) {
+pub fn atom_field(
+  named: String,
+  with decoder: Decoder(value)
+) -> Decoder(value)
+{
   let Decoder(decode_fun) = decoder
   let named_result =
     atom_mod.from_string(named)
@@ -120,9 +128,15 @@ pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value)
   Decoder(fun)
 }
 
+// TODO: Add `string_field` function?
+
 // Combining
 
-fn try_decoders(dynamic: Dynamic, decoders: List(Decoder(a))) -> Result(a, String) {
+fn try_decoders(
+  dynamic: Dynamic,
+  decoders: List(Decoder(a))
+) -> Result(a, String)
+{
   case decoders {
     [Decoder(decode_fun) | remaining_decoders] ->
       case decode_fun(dynamic) {
@@ -156,7 +170,11 @@ pub fn unwrap(decoder: Decoder(a)) -> fn(Dynamic) -> Result(a, String) {
   decode_fun
 }
 
-pub fn then(after decoder: Decoder(a), apply fun: fn(a) -> Decoder(b)) -> Decoder(b) {
+pub fn then(
+  after decoder: Decoder(a),
+  apply fun: fn(a) -> Decoder(b)
+) -> Decoder(b)
+{
   let Decoder(decode_fun) = decoder
   let unwrapped_decoder_fun = compose(fun, unwrap)
 
@@ -392,7 +410,13 @@ pub fn map7(
         decode_fun6(dynamic),
         decode_fun7(dynamic)
       {
-        Ok(a), Ok(b), Ok(c), Ok(d), Ok(e), Ok(f), Ok(g) -> Ok(fun(a, b, c, d, e, f, g))
+        Ok(a),
+        Ok(b),
+        Ok(c),
+        Ok(d),
+        Ok(e),
+        Ok(f),
+        Ok(g) -> Ok(fun(a, b, c, d, e, f, g))
         Error(str), _, _, _, _, _, _ -> Error(str)
         _, Error(str), _, _, _, _, _ -> Error(str)
         _, _, Error(str), _, _, _, _ -> Error(str)
@@ -439,7 +463,14 @@ pub fn map8(
         decode_fun7(dynamic),
         decode_fun8(dynamic)
       {
-        Ok(a), Ok(b), Ok(c), Ok(d), Ok(e), Ok(f), Ok(g), Ok(h) -> Ok(fun(a, b, c, d, e, f, g, h))
+        Ok(a),
+        Ok(b),
+        Ok(c),
+        Ok(d),
+        Ok(e),
+        Ok(f),
+        Ok(g),
+        Ok(h) -> Ok(fun(a, b, c, d, e, f, g, h))
         Error(str), _, _, _, _, _, _, _ -> Error(str)
         _, Error(str), _, _, _, _, _, _ -> Error(str)
         _, _, Error(str), _, _, _, _, _ -> Error(str)
@@ -457,7 +488,11 @@ pub fn map8(
 
 // Decoding
 
-pub fn decode_dynamic(dynamic: Dynamic, with decoder: Decoder(a)) -> Result(a, String) {
+pub fn decode_dynamic(
+  dynamic: Dynamic,
+  with decoder: Decoder(a)
+) -> Result(a, String)
+{
   let Decoder(decode_fun) = decoder
 
   decode_fun(dynamic)
