@@ -5,7 +5,11 @@ import gleam/result
 import gleam/string as string_mod
 
 
-// Types
+// TODO: Explain the differences between using external functions and types
+// (FFI) and decoders, and when you might want to use one versus the other.
+
+
+// TYPES
 
 // TODO: Have a proper Error type? `gleam_stdlib/dynamic` may need the same.
 
@@ -15,55 +19,41 @@ pub enum Decoder(a) {
   )
 }
 
-// TODO: Add an enum for decoding success/failure, rather than using `Result`?
-// This might be useful for helping to distinguish semantically between whether
-// decoding failed or whether an external function that they called return a
-// `Result` (ok/error tuple) that might have failed. E.g.
-//
-// pub enum Decoder(s, f) {
-//   Decoder(
-//     fn(Dynamic) -> Outcome(s, f)
-//   )
-// }
-//
-// pub enum Outcome(s, f) {
-//   Success(s)
-//   Failure(f)
-// }
 
-// Primitives
+// PRIMITIVES
 
+// Create a decoder that will attempt to transform a `Dynamic` into a `Bool`.
 pub fn bool() -> Decoder(Bool) {
   Decoder(dynamic_mod.bool)
 }
 
+// Create a decoder that will attempt to transform a `Dynamic` into an `Atom`.
+//
 // Note that in Erlang, values such as `undefined`, `null`, `nil`, and `none`
 // are all atoms! In Elixir, `nil` is an atom as well.
-//
-// TODO: Maybe add convenience "primitives" for one or more of these common
-// atoms in Erlang or Elixir? E.g. `nil_atom`, `undefined_atom`, etc.
-//
-// TODO: Same with `ok` and `error` atoms? Or turn those into results?
 pub fn atom() -> Decoder(Atom) {
   Decoder(dynamic_mod.atom)
 }
 
+// Create a decoder that will attempt to transform a `Dynamic` into an `Int`.
 pub fn int() -> Decoder(Int) {
   Decoder(dynamic_mod.int)
 }
 
+// Create a decoder that will attempt to transform a `Dynamic` into a `Float`.
 pub fn float() -> Decoder(Float) {
   Decoder(dynamic_mod.float)
 }
 
+// Create a decoder that will attempt to transform a `Dynamic` into a `String`.
 pub fn string() -> Decoder(String) {
   Decoder(dynamic_mod.string)
 }
 
 
-// Nested data
+// NESTED DATA
 
-// Retrieve an element in a tuple at the given position.
+// Create a decoder that retrieves an element in a tuple at the given position.
 pub fn element(
   at position: Int,
   with decoder: Decoder(value)
@@ -81,9 +71,9 @@ pub fn element(
   Decoder(fun)
 }
 
-// Get the value for a given field in a map. If the field you're trying to
-// access is an atom, consider using the `atom_field` function instead of this
-// one.
+// Create a decoder that gets the value for a given field in a map. If the
+// field you're trying to access is an atom, consider using the `atom_field`
+// function instead of this one.
 pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
@@ -97,9 +87,9 @@ pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
   Decoder(fun)
 }
 
-// Takes a field name as a string and tries to turn it into an atom in order to
-// access it. If the atom doesn't exist, the field doesn't either! And in that
-// case the decoder will fail.
+// Create a decoder that takes a field name as a string and tries to turn it
+// into an atom in order to access it. If the atom doesn't exist, the field
+// doesn't either! And in that case the decoder will fail.
 //
 // Atoms are commonly used as map fields in Erlang and Elixir; when accessing
 // map keys that are atoms, this saves you the trouble of having to handle atom
@@ -130,7 +120,7 @@ pub fn atom_field(
   Decoder(fun)
 }
 
-// Decode a list of values.
+// Create a decoder for decoding a list of values.
 //
 // TODO: Explain what to do if the values in your list are of different
 // "types" (e.g. some ints and some floats).
@@ -146,7 +136,7 @@ pub fn list(with decoder: Decoder(value)) -> Decoder(List(value)) {
   Decoder(list_fun)
 }
 
-// Complex decoding
+// COMPLEX DECODING
 
 // Create a decoder that always succeeds with the given value, ignoring the
 // provided `Dynamic` data.
@@ -179,7 +169,8 @@ fn try_decoders(
   }
 }
 
-// Try to decode a value with a list of different decoders.
+// Create a decoder that tries to decode a value with a list of different
+// decoders.
 pub fn one_of(decoders: List(Decoder(a))) -> Decoder(a) {
   Decoder(
     fn(dynamic) {
@@ -201,8 +192,8 @@ fn unwrap(decoder: Decoder(a)) -> fn(Dynamic) -> Result(a, String) {
   decode_fun
 }
 
-// Create a decoder that operates on a previous result. Can be used with
-// `from_result` to decode a `Dynamic` value into enum an type.
+// Create a decoder that operates on a previous result. Often used with
+// `from_result` to decode a `Dynamic` value into a particular record/type.
 pub fn then(
   after decoder: Decoder(a),
   apply fun: fn(a) -> Decoder(b)
@@ -220,8 +211,8 @@ pub fn then(
   )
 }
 
-// Create a decoder from a result. Useful with `then` to decode a `Dynamic`
-// value into an enum type.
+// Create a decoder from a `Result`. Useful whenn used with `then` to transform
+// a `Dynamic` value into an enum type.
 pub fn from_result(result: Result(a, String)) -> Decoder(a) {
   case result {
     Ok(value) -> succeed(value)
@@ -229,10 +220,16 @@ pub fn from_result(result: Result(a, String)) -> Decoder(a) {
   }
 }
 
-// Mapping
+// MAPPING
 //
 // TODO: Explain what to do if you run out of maps.
 
+// Create a decoder that, if successful, transforms the original value it was
+// decoding into a different value.
+//
+// Use `map` rather than `then` when your transformation function will never
+// fail (that is, when it _doesn't_ return a `Result(val, err)`. Use `then`
+// when it might!
 pub fn map(fun: fn(a) -> value, with decoder: Decoder(a)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
@@ -246,6 +243,11 @@ pub fn map(fun: fn(a) -> value, with decoder: Decoder(a)) -> Decoder(value) {
   Decoder(mapped_fun)
 }
 
+// Create a decoder from two decoders that, if both are successful, transforms
+// those decoded values into a different value.
+//
+// `map2` and its siblings (`map3`, `map4`, etc.) are usually used to transform
+// data such as Erlang records or Elixir maps into Gleam records/types.
 pub fn map2(
   fun: fn(a, b) -> value,
   decoder1: Decoder(a),
