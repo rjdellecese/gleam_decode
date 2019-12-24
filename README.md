@@ -12,6 +12,10 @@ on with all the safety of the Gleam programming language!
 Let's say that you have an Elixir or Erlang function that you'd like to call
 from your Gleam code, whose returned data you'd like to work with in Gleam.
 
+### Elixir
+
+You might have a user struct in **Elixir** like this one.
+
 ```elixir
 # user.ex
 
@@ -24,6 +28,10 @@ defmodule User do
   def create_user(), do: %User{}
 end
 ```
+
+### Erlang
+
+Or a user record in **Erlang** like this one.
 
 ```erlang
 %% user.hrl
@@ -45,10 +53,12 @@ create_user() ->
    #user{}.
 ```
 
-And let's say that you want to turn each of these users into a `User` struct in
-Gleam.
+### Gleam
 
-```gleam
+And let's say that you want to turn each of these users into a `User` struct in
+**Gleam**.
+
+```rust
 // user.gleam
 
 import decode.{Decoder, decode_dynamic, atom_field, element, map2, int, string}
@@ -101,7 +111,7 @@ pub fn erl_create_user() -> Result(User, String) {
 
 That's it! Let's see it in action in a test.
 
-```gleam
+```rust
 // user_test.gleam
 import gleam/expect
 import user.{ex_create_user, erl_create_user}
