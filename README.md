@@ -19,9 +19,7 @@ defmodule User do
   defstruct name: "Jose Valim", age: 25
   @type t :: %__MODULE__{name: String.t(), age: non_neg_integer}
 
-  @doc """
-  Create a user struct with the default values.
-  """
+  @doc "Create a user struct with the default values."
   @spec create_user() :: User.t()
   def create_user(), do: %User{}
 end
@@ -30,12 +28,6 @@ end
 ```erlang
 %% user.hrl
 
-%%-----------------------------------------------------------
-%% Data Type: user
-%% where:
-%%    name:  A string (default is "John").
-%%    age:   An integer (default is 25).
-%%------------------------------------------------------------
 -record(user, {name = "Joe Armstrong", age = 35}).
 ```
 
