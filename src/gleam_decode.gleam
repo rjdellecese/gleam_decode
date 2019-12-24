@@ -13,7 +13,7 @@ import gleam/string as string_mod
 
 // TODO: Have a proper Error type? `gleam_stdlib/dynamic` may need the same.
 
-pub enum Decoder(a) {
+pub type Decoder(a) {
   Decoder(
     fn(Dynamic) -> Result(a, String)
   )
@@ -212,7 +212,7 @@ pub fn then(
 }
 
 // Create a decoder from a `Result`. Useful whenn used with `then` to transform
-// a `Dynamic` value into an enum type.
+// a `Dynamic` value into a record/type.
 pub fn from_result(result: Result(a, String)) -> Decoder(a) {
   case result {
     Ok(value) -> succeed(value)

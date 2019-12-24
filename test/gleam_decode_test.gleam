@@ -62,7 +62,7 @@ pub fn string_test() {
 }
 
 pub fn element_test() {
-  struct(1, 2.3, "string")
+  tuple(1, 2.3, "string")
   |> dynamic.from
   |> decode_dynamic(_, element(1, float()))
   |> expect.equal(_, Ok(2.3))
@@ -96,9 +96,11 @@ pub fn map_test() {
   |> expect.equal(_, Ok("1"))
 }
 
-struct Pair {
-  int: Int
-  string: String
+type Pair {
+  Pair(
+    int: Int,
+    string: String
+  )
 }
 
 pub fn map2_test() {
@@ -109,13 +111,13 @@ pub fn map2_test() {
       element(1, string())
     )
 
-  struct(1, "string")
+  tuple(1, "string")
   |> dynamic.from
   |> decode_dynamic(_, pair_decoder)
   |> expect.equal(_, Ok(Pair(1, "string")))
 }
 
-enum Pet {
+type Pet {
   Cat(name: String, poise: Int)
   Dog(name: String, loyalty: Float)
 }
@@ -135,8 +137,8 @@ pub fn one_of_test() {
     )
   let pet_decoder = one_of([cat_decoder, dog_decoder])
 
-  let fifi_tuple = struct("Fifi", 100)
-  let fido_tuple = struct("Fido", 67.3)
+  let fifi_tuple = tuple("Fifi", 100)
+  let fido_tuple = tuple("Fido", 67.3)
 
   let fifi = Cat(name: "Fifi", poise: 100)
   let fido = Dog(name: "Fido", loyalty: 67.3)
@@ -162,14 +164,14 @@ pub fn list_test() {
 }
 
 pub fn succeed_test() {
-  struct(1, "string")
+  tuple(1, "string")
   |> dynamic.from
   |> decode_dynamic(_, succeed(2.3))
   |> expect.equal(_, Ok(2.3))
 }
 
 pub fn fail_test() {
-  struct(1, "string")
+  tuple(1, "string")
   |> dynamic.from
   |> decode_dynamic(_, fail("This will always fail"))
   |> expect.equal(_, Error("This will always fail"))
@@ -183,7 +185,7 @@ fn compose(first_fun: fn(a) -> b, second_fun: fn(b) -> c) -> fn(a) -> c {
   }
 }
 
-enum Direction {
+type Direction {
   Left
   Right
 }

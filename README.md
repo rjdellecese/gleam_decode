@@ -61,9 +61,11 @@ Gleam.
 
 import decode.{Decoder, decode_dynamic, atom_field, element, map2, int, string}
 
-pub struct User {
-  name: String
-  age: Int
+pub type User {
+  User(
+    name: String,
+    age: Int
+  )
 }
 
 // First, you define your decoders
