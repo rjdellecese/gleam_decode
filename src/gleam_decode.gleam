@@ -63,6 +63,7 @@ pub fn string() -> Decoder(String) {
 
 // Nested data
 
+// Retrieve an element in a tuple at the given position.
 pub fn element(
   at position: Int,
   with decoder: Decoder(value)
@@ -80,6 +81,9 @@ pub fn element(
   Decoder(fun)
 }
 
+// Get the value for a given field in a map. If the field you're trying to
+// access is an atom, consider using the `atom_field` function instead of this
+// one.
 pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
@@ -96,8 +100,6 @@ pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
 // Takes a field name as a string and tries to turn it into an atom in order to
 // access it. If the atom doesn't exist, the field doesn't either! And in that
 // case the decoder will fail.
-//
-// TODO: Examples
 //
 // Atoms are commonly used as map fields in Erlang and Elixir; when accessing
 // map keys that are atoms, this saves you the trouble of having to handle atom
@@ -128,9 +130,23 @@ pub fn atom_field(
   Decoder(fun)
 }
 
-// TODO: Add `string_field` function?
+// Complex decoding
 
-// Combining
+// Create a decoder that always succeeds with the given value, ignoring the
+// provided `Dynamic` data.
+//
+// This is usually used with `then` and `one_of`.
+pub fn succeed(a) -> Decoder(a) {
+  Decoder(fn(_dynamic) { Ok(a) })
+}
+
+// Create a decoder that always fails with the given value, ignoring the
+// provided `Dynamic` data.
+//
+// This is usually used with `then` and `one_of`.
+pub fn fail(error: String) -> Decoder(a) {
+  Decoder(fn(_dynamic) { Error(error) })
+}
 
 fn try_decoders(
   dynamic: Dynamic,
@@ -147,6 +163,7 @@ fn try_decoders(
   }
 }
 
+// Try to decode a value with a list of different decoders.
 pub fn one_of(decoders: List(Decoder(a))) -> Decoder(a) {
   Decoder(
     fn(dynamic) {
@@ -163,13 +180,13 @@ fn compose(first_fun: fn(a) -> b, second_fun: fn(b) -> c) -> fn(a) -> c {
   }
 }
 
-// TODO: Make this private once https://github.com/gleam-lang/gleam/issues/359
-// is resolved.
-pub fn unwrap(decoder: Decoder(a)) -> fn(Dynamic) -> Result(a, String) {
+fn unwrap(decoder: Decoder(a)) -> fn(Dynamic) -> Result(a, String) {
   let Decoder(decode_fun) = decoder
   decode_fun
 }
 
+// Create a decoder that operates on a previous result. Can be used with
+// `from_result` to decode a `Dynamic` value into enum an type.
 pub fn then(
   after decoder: Decoder(a),
   apply fun: fn(a) -> Decoder(b)
@@ -187,15 +204,8 @@ pub fn then(
   )
 }
 
-
-pub fn succeed(a) -> Decoder(a) {
-  Decoder(fn(_dynamic) { Ok(a) })
-}
-
-pub fn fail(error: String) -> Decoder(a) {
-  Decoder(fn(_dynamic) { Error(error) })
-}
-
+// Create a decoder from a result. Useful with `then` to decode a `Dynamic`
+// value into an enum type.
 pub fn from_result(result: Result(a, String)) -> Decoder(a) {
   case result {
     Ok(value) -> succeed(value)
