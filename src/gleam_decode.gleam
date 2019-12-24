@@ -130,6 +130,22 @@ pub fn atom_field(
   Decoder(fun)
 }
 
+// Decode a list of values.
+//
+// TODO: Explain what to do if the values in your list are of different
+// "types" (e.g. some ints and some floats).
+pub fn list(with decoder: Decoder(value)) -> Decoder(List(value)) {
+  let Decoder(decode_fun) = decoder
+
+  let list_fun =
+    fn(dynamic) {
+      dynamic
+      |> dynamic_mod.list(_, decode_fun)
+    }
+
+  Decoder(list_fun)
+}
+
 // Complex decoding
 
 // Create a decoder that always succeeds with the given value, ignoring the

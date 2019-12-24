@@ -10,6 +10,7 @@ import gleam_decode.{
   float,
   from_result,
   int,
+  list,
   map,
   map2,
   one_of,
@@ -149,6 +150,15 @@ pub fn one_of_test() {
   |> dynamic.from
   |> decode_dynamic(_, pet_decoder)
   |> expect.equal(_, Ok(fido))
+}
+
+pub fn list_test() {
+  let list_of_ints_decoder = list(int())
+
+  [1, 2, 3]
+  |> dynamic.from
+  |> decode_dynamic(_, list_of_ints_decoder)
+  |> expect.equal(_, Ok([1, 2, 3]))
 }
 
 pub fn succeed_test() {
