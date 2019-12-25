@@ -9,9 +9,9 @@ on with all the safety of the Gleam programming language!
 
 ## Basic usage
 
-Let's say that you have an Elixir and an Erlang function that you'd like to
-call from your Gleam code, whose returned data you'd like to work with in
-Gleam.
+Let's say that you have an Elixir function and an Erlang function that you'd
+like to call from your Gleam code, whose returned data you'd like to work with
+in Gleam.
 
 ### Elixir
 
