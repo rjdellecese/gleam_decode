@@ -1,5 +1,5 @@
 {application, gleam_decode,
- [{description, "A Gleam program"},
+ [{description, "Transform Erlang or Elixir data into Gleam data"},
   {vsn, "1.0.0"},
   {registered, []},
   {applications,
@@ -10,5 +10,5 @@
   {modules, []},
 
   {licenses, ["Apache 2.0"]},
-  {links, []}
+  {links, ["https://github.com/rjdellecese/gleam_decode"]}
 ]}.
