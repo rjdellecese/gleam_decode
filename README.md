@@ -122,13 +122,13 @@ That's it! Let's see it in action in a test.
 import gleam/expect
 import user.{ex_create_user, erl_create_user}
 
-pub fn erl_user_test() {
+pub fn ex_user_test() {
   ex_create_user()
   |> expect.equal(_, Ok(User(name: "Jose Valim", age: 25)))
 }
 
-pub fn ex_user_test() {
-  ex_create_user()
+pub fn erl_user_test() {
+  erl_create_user()
   |> expect.equal(_, Ok(User(name: "Joe Armstrong", age: 35)))
 }
 ```
