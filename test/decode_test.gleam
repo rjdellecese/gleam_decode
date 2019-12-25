@@ -1,4 +1,4 @@
-import gleam_decode.{
+import decode.{
   Decoder,
   atom,
   atom_field,
