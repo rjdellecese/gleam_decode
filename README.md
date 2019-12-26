@@ -1,5 +1,5 @@
 # decode
-![Hex.pm](https://img.shields.io/hexpm/v/gleam_decode)
+[![Hex.pm](https://img.shields.io/hexpm/v/gleam_decode)](https://hex.pm/packages/gleam_decode)
 
 A Gleam library for transforming Erlang or Elixir data into Gleam data.
 
