@@ -7,5 +7,5 @@
   {modules, []},
   {licenses, ["Apache 2.0"]},
   {links, [{"GitHub", "https://github.com/rjdellecese/gleam_decode"}]},
-  {include_files, ["gleam.toml", "gen"]}
+  {include_files, ["gleam.toml", "gen/src"]}
 ]}.
