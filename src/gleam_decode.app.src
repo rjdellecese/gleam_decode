@@ -2,13 +2,10 @@
  [{description, "Transform Erlang or Elixir data into Gleam data"},
   {vsn, "1.0.0"},
   {registered, []},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
+  {applications, [kernel, stdlib]},
   {env,[]},
   {modules, []},
-
   {licenses, ["Apache 2.0"]},
-  {links, ["https://github.com/rjdellecese/gleam_decode"]}
+  {links, ["https://github.com/rjdellecese/gleam_decode"]},
+  {include_files, ["gleam.toml", "gen"]}
 ]}.
