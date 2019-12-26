@@ -5,10 +5,6 @@ import gleam/result
 import gleam/string as string_mod
 
 
-// TODO: Explain the differences between using external functions and types
-// (FFI) and decoders, and when you might want to use one versus the other.
-
-
 // TYPES
 
 // TODO: Have a proper Error type? `gleam_stdlib/dynamic` may need the same.
@@ -122,8 +118,18 @@ pub fn atom_field(
 
 // Create a decoder for decoding a list of values.
 //
-// TODO: Explain what to do if the values in your list are of different
-// "types" (e.g. some ints and some floats).
+// If you're trying to decode a list of values of different types, like a list
+// of both floats and ints, you'll probably want to ceate your own custom type
+// to capture both possibilities. For example:
+//
+//     pub type Number {
+//       IntNumber(Int)
+//       FloatNumber(Float)
+//     }
+//
+//     pub fn number_decoder() -> Decoder(Number) {
+//       
+//     }
 pub fn list(with decoder: Decoder(value)) -> Decoder(List(value)) {
   let Decoder(decode_fun) = decoder
 
@@ -195,7 +201,7 @@ fn unwrap(decoder: Decoder(a)) -> fn(Dynamic) -> Result(a, String) {
 // Create a decoder that operates on a previous result. Often used with
 // `from_result` to decode a `Dynamic` value into a particular record/type.
 pub fn then(
-  after decoder: Decoder(a),
+  decoder: Decoder(a),
   apply fun: fn(a) -> Decoder(b)
 ) -> Decoder(b)
 {
@@ -222,14 +228,15 @@ pub fn from_result(result: Result(a, String)) -> Decoder(a) {
 
 // MAPPING
 //
-// TODO: Explain what to do if you run out of maps.
-
 // Create a decoder that, if successful, transforms the original value it was
 // decoding into a different value.
 //
 // Use `map` rather than `then` when your transformation function will never
-// fail (that is, when it _doesn't_ return a `Result(val, err)`. Use `then`
-// when it might!
+// fail (that is, when it returns a `val`, rather than a `Result(val, err)`.
+// Use `then` when it might!
+//
+// If you want to decode a `Dynamic` into a Gleam record with more than eight
+// fields, you'll need to create an intermediate type and 
 pub fn map(fun: fn(a) -> value, with decoder: Decoder(a)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
@@ -514,7 +521,7 @@ pub fn map8(
 }
 
 
-// Decoding
+// DECODING
 
 pub fn decode_dynamic(
   dynamic: Dynamic,

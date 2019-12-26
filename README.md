@@ -120,6 +120,16 @@ pub fn erl_create_user() -> Result(User, String) {
 ```
 
 
+## Documentation
+
+Although Gleam does not yet have a documentation generation tool, the public API
+for this library is documented in the source code! Check out `src/decode.gleam`.
+
+If after reading the source documentation you still need help, or are dealing
+with a decoding problem that you don't believe is solvable with the current API,
+please open an issue!
+
+
 ## Installation
 
 Add `gleam_decode` to the deps section of your `rebar3.config` file.
