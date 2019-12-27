@@ -78,7 +78,7 @@ pub type User {
     name: String,
     age: Int
   )
-}
+};
 
 // Second, we define a decoder that will decode an Elixir User struct and
 // transform it into our custom Gleam type.
