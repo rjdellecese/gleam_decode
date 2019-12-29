@@ -129,6 +129,18 @@ pub fn list(with decoder: Decoder(value)) -> Decoder(List(value)) {
 
 // COMPLEX DECODING
 
+// Create a decoder that always succeeds with the `Dynamic` data provided,
+// untouched.
+//
+// This is useful when you are receiving particularly complex `Dynamic` data
+// that you want to deal with later in your program (this might be useful when
+// interfacing with Erlang or Elixir libraries, for example), or when you're
+// going to send it back out to Erlang or Elixir code and aren't concerned
+// about dealing with its structure in Gleam.
+pub fn dynamic() -> Decoder(Dynamic) {
+  Decoder(fn(dynamic) { Ok(dynamic) })
+}
+
 // Create a decoder that always succeeds with the given value, ignoring the
 // provided `Dynamic` data.
 //

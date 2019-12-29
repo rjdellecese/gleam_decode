@@ -4,6 +4,7 @@ import decode.{
   atom_field,
   bool,
   decode_dynamic,
+  dynamic,
   element,
   fail,
   field,
@@ -19,14 +20,15 @@ import decode.{
   then
 }
 import gleam/atom.{Atom} as atom_mod
-import gleam/dynamic.{Dynamic}
+import gleam/dynamic.{Dynamic} as dynamic_mod
 import gleam/expect
 import gleam/int as int_mod
 import gleam/map as map_mod
+import gleam/result
 
 pub fn bool_test() {
   True
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, bool())
   |> expect.equal(_, Ok(True))
 }
@@ -35,35 +37,35 @@ pub fn atom_test() {
   let my_atom = atom_mod.create_from_string("my_atom")
 
   my_atom
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, atom())
   |> expect.equal(_, Ok(my_atom))
 }
 
 pub fn int_test() {
   1
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, int())
   |> expect.equal(_, Ok(1))
 }
 
 pub fn float_test() {
   1.23
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, float())
   |> expect.equal(_, Ok(1.23))
 }
 
 pub fn string_test() {
   "string"
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, string())
   |> expect.equal(_, Ok("string"))
 }
 
 pub fn element_test() {
   tuple(1, 2.3, "string")
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, element(1, float()))
   |> expect.equal(_, Ok(2.3))
 }
@@ -71,7 +73,7 @@ pub fn element_test() {
 pub fn field_test() {
   map_mod.new()
   |> map_mod.insert(_, "key", "value")
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, field("key", string()))
   |> expect.equal(_, Ok("value"))
 }
@@ -81,7 +83,7 @@ pub fn atom_field_test() {
 
   map_mod.new()
   |> map_mod.insert(_, key_atom, "value")
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, atom_field("key", string()))
   |> expect.equal(_, Ok("value"))
 }
@@ -91,7 +93,7 @@ pub fn map_test() {
     map(int_mod.to_string, int())
 
   1
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, int_to_string_decoder)
   |> expect.equal(_, Ok("1"))
 }
@@ -112,7 +114,7 @@ pub fn map2_test() {
     )
 
   tuple(1, "string")
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, pair_decoder)
   |> expect.equal(_, Ok(Pair(1, "string")))
 }
@@ -144,12 +146,12 @@ pub fn one_of_test() {
   let fido = Dog(name: "Fido", loyalty: 67.3)
 
   fifi_tuple
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, pet_decoder)
   |> expect.equal(_, Ok(fifi))
 
   fido_tuple
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, pet_decoder)
   |> expect.equal(_, Ok(fido))
 }
@@ -158,21 +160,29 @@ pub fn list_test() {
   let list_of_ints_decoder = list(int())
 
   [1, 2, 3]
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, list_of_ints_decoder)
   |> expect.equal(_, Ok([1, 2, 3]))
 }
 
+pub fn dynamic_test() {
+  "some complex data"
+  |> dynamic_mod.from
+  |> decode_dynamic(_, dynamic())
+  |> result.then(_, decode_dynamic(_, string()))
+  |> expect.equal(_, Ok("some complex data"))
+}
+
 pub fn succeed_test() {
   tuple(1, "string")
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, succeed(2.3))
   |> expect.equal(_, Ok(2.3))
 }
 
 pub fn fail_test() {
   tuple(1, "string")
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, fail("This will always fail"))
   |> expect.equal(_, Error("This will always fail"))
 }
@@ -204,12 +214,12 @@ pub fn then_and_from_result_test() {
     |> then(_, compose(validate_left_or_right, from_result))
 
   "up"
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, valid_string_decoder)
   |> expect.equal(_, Error("Neither left nor right!"))
 
   "left"
-  |> dynamic.from
+  |> dynamic_mod.from
   |> decode_dynamic(_, valid_string_decoder)
   |> expect.equal(_, Ok(Left))
 }
