@@ -80,8 +80,8 @@ pub type User {
   )
 };
 
-// Second, we define a decoder that will decode an Elixir User struct and
-// transform it into our custom Gleam type.
+// Second, we define a decoder that will be used to transform an Elixir User
+// struct into our custom Gleam type.
 pub fn ex_user_decoder() -> Decoder(User) {
   map2(
     User,
