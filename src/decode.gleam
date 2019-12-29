@@ -505,6 +505,8 @@ pub fn map8(
 
 // DECODING
 
+// Perform the actual decoding! Attempt turn some `Dynamic` data into the type
+// of Gleam data specified by your decoder.
 pub fn decode_dynamic(
   dynamic: Dynamic,
   with decoder: Decoder(a)
