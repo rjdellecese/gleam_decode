@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+## v1.1.0 - 2019-12-28
+
 ### Added
 
 - A `dynamic` decoder for decoding `Dynamic` data into `Dynamic` data.
