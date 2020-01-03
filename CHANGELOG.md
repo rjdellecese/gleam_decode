@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+## v1.2.0 - 2020-01-02
+
+### Added
+
+- An `ok_error_tuple` decoder for decoding `ok`/`error` tuples, (e.g. `{ok,
+  Success}`/`{error, Failure}`).
+
 ## v1.1.0 - 2019-12-28
 
 ### Added
