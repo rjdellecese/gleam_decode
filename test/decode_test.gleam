@@ -14,6 +14,7 @@ import decode.{
   list,
   map,
   map2,
+  ok_error_tuple,
   one_of,
   string,
   succeed,
@@ -24,7 +25,7 @@ import gleam/dynamic.{Dynamic} as dynamic_mod
 import gleam/expect
 import gleam/int as int_mod
 import gleam/map as map_mod
-import gleam/result
+import gleam/result as result_mod
 
 pub fn bool_test() {
   True
@@ -169,7 +170,7 @@ pub fn dynamic_test() {
   "some complex data"
   |> dynamic_mod.from
   |> decode_dynamic(_, dynamic())
-  |> result.then(_, decode_dynamic(_, string()))
+  |> result_mod.then(_, decode_dynamic(_, string()))
   |> expect.equal(_, Ok("some complex data"))
 }
 
@@ -222,4 +223,41 @@ pub fn then_and_from_result_test() {
   |> dynamic_mod.from
   |> decode_dynamic(_, valid_string_decoder)
   |> expect.equal(_, Ok(Left))
+}
+
+type ForeignFunctionResult {
+  Success(Int)
+  Failure(String)
+  Error
+}
+
+pub fn ok_error_tuple_test() {
+  let ok_decoder = element(1, map(Success, int()))
+  let error_decoder = element(1, map(Failure, string()))
+
+  let decode_foreign_function_result =
+    fn(result: Dynamic) {
+      decode_dynamic(result, ok_error_tuple(ok_decoder, error_decoder))
+      |> result_mod.unwrap(_, Error)
+    }
+
+  let ok_atom = atom_mod.create_from_string("ok")
+  let error_atom = atom_mod.create_from_string("error")
+
+  tuple(ok_atom, 1)
+  |> dynamic_mod.from
+  |> decode_foreign_function_result
+  |> expect.equal(_, Success(1))
+
+  tuple(error_atom, "Something went predictably wrong!")
+  |> dynamic_mod.from
+  |> decode_foreign_function_result
+  |> expect.equal(_, Failure("Something went predictably wrong!"))
+
+  // A decoding error becomes an Error record (variant) of the
+  // ForeignFunctionResult type
+  ["Uh oh.", "Something went unpredictably wrong!"]
+  |> dynamic_mod.from
+  |> decode_foreign_function_result
+  |> expect.equal(_, Error)
 }

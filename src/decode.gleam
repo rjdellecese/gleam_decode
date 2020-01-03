@@ -223,6 +223,46 @@ pub fn from_result(result: Result(a, String)) -> Decoder(a) {
   }
 }
 
+// A common pattern in Erlang and Elixir code is to, instead of raising a
+// runtime error upon some function's anticipated failure (resulting from
+// something like bad arguments, or a failed database query or network
+// request), return an `{ok, Success}` or `{error, Failure}` tuple (which would
+// look like `{:ok, success}` or `{:error, Failure}` in Elixir) instead.
+//
+// This function creates a decoder that addresses this common scenario by
+// either running the `ok_decoder` if the `Dynamic` is a tuple whose first
+// element is an `ok` atom, or the `error_decoder` if the `Dynamic` is a tuple
+// whose first element is an `error` atom.
+pub fn ok_error_tuple(
+  ok_decoder: Decoder(value),
+  error_decoder: Decoder(value)
+) -> Decoder(value)
+{
+  let failure_decoder =
+    fn(atom_as_string) {
+      "Expected 'ok' or 'error' atom in first position of tuple, got '"
+      |> string_mod.append(_, atom_as_string)
+      |> string_mod.append(_, "' atom instead")
+      |> fail
+    }
+
+  let success_or_failure_fun =
+    fn(result_atom) {
+      case atom_mod.to_string(result_atom) {
+        "ok" ->
+          ok_decoder
+        "error" ->
+          error_decoder
+        atom_as_string ->
+          failure_decoder(atom_as_string)
+      }
+    }
+
+  element(0, atom())
+  |> then(_, success_or_failure_fun)
+}
+
+
 // MAPPING
 
 // Create a decoder that, if successful, transforms the original value it was
