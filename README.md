@@ -3,9 +3,8 @@
 
 A Gleam library for transforming Erlang or Elixir data into Gleam data.
 
-`decode` provides you with the tools to build `Decoder`s, which can be used to
-transform data from Erlang or Elixir into typed data that can then be operated
-on with all the safety of the Gleam programming language!
+`decode` allows you to build `Decoder`s, which can then be used to transform
+data from Erlang or Elixir into type-safe Gleam data!
 
 ## Getting started
 
@@ -28,8 +27,8 @@ field, and module names are just atoms!
 %{__struct__: Elixir.User, name: "Jose Valim", age: 25}
 ```
 
-So let's say that you have an Elixir function that returns one of these User
-structs, that you'd like to use in your Gleam code.
+So you have an Elixir function that returns one of these User structs, that
+you'd like to use in your Gleam code.
 
 ```elixir
 # user.ex
@@ -52,8 +51,7 @@ Remember that Erlang records are just tagged tuples under the hood!
 {user, "Joe Armstrong", 35}
 ```
 
-So let's say that you have an Erlang function that returns one of these user
-records.
+So you have an Erlang function that returns one of these user records.
 
 ```erlang
 %% user.erl
@@ -141,7 +139,7 @@ Add `gleam_decode` to the deps section of your `rebar3.config` file.
 ```
 
 
-## Thanks
+## Credit
 
 Most of this library is based on the Elm language's JSON decoding library
 ([elm/json][1]), with some attention paid also to the community-driven "JSON
