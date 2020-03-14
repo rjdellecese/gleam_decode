@@ -134,7 +134,7 @@ Add `gleam_decode` to the deps section of your `rebar3.config` file.
 
 ```erlang
 {deps, [
-    {gleam_decode, "1.2.0"}
+    {gleam_decode, "1.3.0"}
 ]}.
 ```
 
