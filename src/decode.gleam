@@ -1,5 +1,6 @@
 import gleam/atom.{Atom} as atom_mod
 import gleam/dynamic.{Dynamic} as dynamic_mod
+import gleam/function
 import gleam/list
 import gleam/result
 import gleam/string as string_mod
@@ -182,14 +183,6 @@ pub fn one_of(decoders: List(Decoder(a))) -> Decoder(a) {
   )
 }
 
-// TODO: Use the stdlib version of this if/when it becomes available.
-fn compose(first_fun: fn(a) -> b, second_fun: fn(b) -> c) -> fn(a) -> c {
-  fn(a) {
-    first_fun(a)
-    |> second_fun
-  }
-}
-
 fn unwrap(decoder: Decoder(a)) -> fn(Dynamic) -> Result(a, String) {
   let Decoder(decode_fun) = decoder
   decode_fun
@@ -203,7 +196,7 @@ pub fn then(
 ) -> Decoder(b)
 {
   let Decoder(decode_fun) = decoder
-  let unwrapped_decoder_fun = compose(fun, unwrap)
+  let unwrapped_decoder_fun = function.compose(fun, unwrap)
 
   Decoder(
     fn(dynamic) {
