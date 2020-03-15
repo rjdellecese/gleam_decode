@@ -130,7 +130,7 @@ please open an issue!
 
 ## Installation
 
-Add `gleam_decode` to the deps section of your `rebar3.config` file.
+Add `gleam_decode` to the deps section of your `rebar.config` file.
 
 ```erlang
 {deps, [
