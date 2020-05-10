@@ -1,25 +1,4 @@
-import decode.{
-  Decoder,
-  atom,
-  atom_field,
-  bool,
-  decode_dynamic,
-  dynamic,
-  element,
-  fail,
-  field,
-  float,
-  from_result,
-  int,
-  list,
-  map,
-  map2,
-  ok_error_tuple,
-  one_of,
-  string,
-  succeed,
-  then
-}
+import decode.{Decoder, atom, atom_field, bool, decode_dynamic, dynamic, element, fail, field, float, from_result, int, list, map, map2, ok_error_tuple, one_of, string, succeed, then}
 import gleam/atom.{Atom} as atom_mod
 import gleam/dynamic.{Dynamic} as dynamic_mod
 import gleam/should
@@ -30,8 +9,8 @@ import gleam/result as result_mod
 pub fn bool_test() {
   True
   |> dynamic_mod.from
-  |> decode_dynamic(_, bool())
-  |> should.equal(_, Ok(True))
+  |> decode_dynamic(bool())
+  |> should.equal(Ok(True))
 }
 
 pub fn atom_test() {
@@ -39,85 +18,76 @@ pub fn atom_test() {
 
   my_atom
   |> dynamic_mod.from
-  |> decode_dynamic(_, atom())
-  |> should.equal(_, Ok(my_atom))
+  |> decode_dynamic(atom())
+  |> should.equal(Ok(my_atom))
 }
 
 pub fn int_test() {
   1
   |> dynamic_mod.from
-  |> decode_dynamic(_, int())
-  |> should.equal(_, Ok(1))
+  |> decode_dynamic(int())
+  |> should.equal(Ok(1))
 }
 
 pub fn float_test() {
   1.23
   |> dynamic_mod.from
-  |> decode_dynamic(_, float())
-  |> should.equal(_, Ok(1.23))
+  |> decode_dynamic(float())
+  |> should.equal(Ok(1.23))
 }
 
 pub fn string_test() {
   "string"
   |> dynamic_mod.from
-  |> decode_dynamic(_, string())
-  |> should.equal(_, Ok("string"))
+  |> decode_dynamic(string())
+  |> should.equal(Ok("string"))
 }
 
 pub fn element_test() {
   tuple(1, 2.3, "string")
   |> dynamic_mod.from
-  |> decode_dynamic(_, element(1, float()))
-  |> should.equal(_, Ok(2.3))
+  |> decode_dynamic(element(1, float()))
+  |> should.equal(Ok(2.3))
 }
 
 pub fn field_test() {
   map_mod.new()
-  |> map_mod.insert(_, "key", "value")
+  |> map_mod.insert("key", "value")
   |> dynamic_mod.from
-  |> decode_dynamic(_, field("key", string()))
-  |> should.equal(_, Ok("value"))
+  |> decode_dynamic(field("key", string()))
+  |> should.equal(Ok("value"))
 }
 
 pub fn atom_field_test() {
   let key_atom = atom_mod.create_from_string("key")
 
   map_mod.new()
-  |> map_mod.insert(_, key_atom, "value")
+  |> map_mod.insert(key_atom, "value")
   |> dynamic_mod.from
-  |> decode_dynamic(_, atom_field("key", string()))
-  |> should.equal(_, Ok("value"))
+  |> decode_dynamic(atom_field("key", string()))
+  |> should.equal(Ok("value"))
 }
 
 pub fn map_test() {
-  let int_to_string_decoder =
-    map(int_mod.to_string, int())
+  let int_to_string_decoder = map(int_mod.to_string, int())
 
   1
   |> dynamic_mod.from
-  |> decode_dynamic(_, int_to_string_decoder)
-  |> should.equal(_, Ok("1"))
+  |> decode_dynamic(int_to_string_decoder)
+  |> should.equal(Ok("1"))
 }
 
 type Pair {
-  Pair(
-    int: Int,
-    string: String
-  )
+  Pair(int: Int, string: String)
 }
 
 pub fn map2_test() {
-  let pair_decoder =
-    map2(
-      Pair,
-      element(0, int()),
-      element(1, string())
-    )
+  let pair_decoder = map2(Pair, element(0, int()), element(1, string()))
 
   tuple(1, "string")
   |> dynamic_mod.from
-  |> decode_dynamic(_, pair_decoder)
-  |> should.equal(_, Ok(Pair(1, "string")))
+  |> decode_dynamic(pair_decoder)
+  |> should.equal(Ok(Pair(1, "string")))
 }
 
 type Pet {
@@ -126,18 +96,16 @@ type Pet {
 }
 
 pub fn one_of_test() {
-  let cat_decoder =
-    map2(
-      fn(name, poise) { Cat(name, poise) },
-      element(0, string()),
-      element(1, int())
-    )
-  let dog_decoder =
-    map2(
-      fn(name, loyalty) { Dog(name, loyalty) },
-      element(0, string()),
-      element(1, float())
-    )
+  let cat_decoder = map2(
+    fn(name, poise) { Cat(name, poise) },
+    element(0, string()),
+    element(1, int()),
+  )
+  let dog_decoder = map2(
+    fn(name, loyalty) { Dog(name, loyalty) },
+    element(0, string()),
+    element(1, float()),
+  )
   let pet_decoder = one_of([cat_decoder, dog_decoder])
 
   let fifi_tuple = tuple("Fifi", 100)
@@ -148,13 +116,13 @@ pub fn one_of_test() {
 
   fifi_tuple
   |> dynamic_mod.from
-  |> decode_dynamic(_, pet_decoder)
-  |> should.equal(_, Ok(fifi))
+  |> decode_dynamic(pet_decoder)
+  |> should.equal(Ok(fifi))
 
   fido_tuple
   |> dynamic_mod.from
-  |> decode_dynamic(_, pet_decoder)
-  |> should.equal(_, Ok(fido))
+  |> decode_dynamic(pet_decoder)
+  |> should.equal(Ok(fido))
 }
 
 pub fn list_test() {
@@ -162,30 +130,30 @@ pub fn list_test() {
 
   [1, 2, 3]
   |> dynamic_mod.from
-  |> decode_dynamic(_, list_of_ints_decoder)
-  |> should.equal(_, Ok([1, 2, 3]))
+  |> decode_dynamic(list_of_ints_decoder)
+  |> should.equal(Ok([1, 2, 3]))
 }
 
 pub fn dynamic_test() {
   "some complex data"
   |> dynamic_mod.from
-  |> decode_dynamic(_, dynamic())
-  |> result_mod.then(_, decode_dynamic(_, string()))
-  |> should.equal(_, Ok("some complex data"))
+  |> decode_dynamic(dynamic())
+  |> result_mod.then(decode_dynamic(_, string()))
+  |> should.equal(Ok("some complex data"))
 }
 
 pub fn succeed_test() {
   tuple(1, "string")
   |> dynamic_mod.from
-  |> decode_dynamic(_, succeed(2.3))
-  |> should.equal(_, Ok(2.3))
+  |> decode_dynamic(succeed(2.3))
+  |> should.equal(Ok(2.3))
 }
 
 pub fn fail_test() {
   tuple(1, "string")
   |> dynamic_mod.from
-  |> decode_dynamic(_, fail("This will always fail"))
-  |> should.equal(_, Error("This will always fail"))
+  |> decode_dynamic(fail("This will always fail"))
+  |> should.equal(Error("This will always fail"))
 }
 
 // TODO: Use the stdlib version of this if/when it becomes available.
@@ -202,27 +170,25 @@ type Direction {
 }
 
 pub fn then_and_from_result_test() {
-  let validate_left_or_right =
-    fn(string) {
-      case string {
-        "left" -> Ok(Left)
-        "right" -> Ok(Right)
-        _string -> Error("Neither left nor right!")
-      }
+  let validate_left_or_right = fn(string) {
+    case string {
+      "left" -> Ok(Left)
+      "right" -> Ok(Right)
+      _string -> Error("Neither left nor right!")
     }
-  let valid_string_decoder =
-    string()
-    |> then(_, compose(validate_left_or_right, from_result))
+  }
+  let valid_string_decoder = string()
+    |> then(compose(validate_left_or_right, from_result))
 
   "up"
   |> dynamic_mod.from
-  |> decode_dynamic(_, valid_string_decoder)
-  |> should.equal(_, Error("Neither left nor right!"))
+  |> decode_dynamic(valid_string_decoder)
+  |> should.equal(Error("Neither left nor right!"))
 
   "left"
   |> dynamic_mod.from
-  |> decode_dynamic(_, valid_string_decoder)
-  |> should.equal(_, Ok(Left))
+  |> decode_dynamic(valid_string_decoder)
+  |> should.equal(Ok(Left))
 }
 
 type ForeignFunctionResult {
@@ -235,11 +201,10 @@ pub fn ok_error_tuple_test() {
   let ok_decoder = element(1, map(Success, int()))
   let error_decoder = element(1, map(Failure, string()))
 
-  let decode_foreign_function_result =
-    fn(result: Dynamic) {
-      decode_dynamic(result, ok_error_tuple(ok_decoder, error_decoder))
-      |> result_mod.unwrap(_, Error)
-    }
+  let decode_foreign_function_result = fn(result: Dynamic) {
+    decode_dynamic(result, ok_error_tuple(ok_decoder, error_decoder))
+    |> result_mod.unwrap(Error)
+  }
 
   let ok_atom = atom_mod.create_from_string("ok")
   let error_atom = atom_mod.create_from_string("error")
@@ -247,17 +212,17 @@ pub fn ok_error_tuple_test() {
   tuple(ok_atom, 1)
   |> dynamic_mod.from
   |> decode_foreign_function_result
-  |> should.equal(_, Success(1))
+  |> should.equal(Success(1))
 
   tuple(error_atom, "Something went predictably wrong!")
   |> dynamic_mod.from
   |> decode_foreign_function_result
-  |> should.equal(_, Failure("Something went predictably wrong!"))
+  |> should.equal(Failure("Something went predictably wrong!"))
 
   // A decoding error becomes an Error record (variant) of the
   // ForeignFunctionResult type
   ["Uh oh.", "Something went unpredictably wrong!"]
   |> dynamic_mod.from
   |> decode_foreign_function_result
-  |> should.equal(_, Error)
+  |> should.equal(Error)
 }
