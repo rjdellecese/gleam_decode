@@ -164,7 +164,7 @@ fn try_decoders(
 ) -> Result(a, String)
 {
   case decoders {
-    [Decoder(decode_fun) | remaining_decoders] ->
+    [Decoder(decode_fun), ..remaining_decoders] ->
       case decode_fun(dynamic) {
         Ok(val) -> Ok(val)
         Error(_str) -> try_decoders(dynamic, remaining_decoders)
