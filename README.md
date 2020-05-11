@@ -1,5 +1,5 @@
 # decode
-[![Hex.pm](https://img.shields.io/hexpm/v/gleam_decode)](https://hex.pm/packages/gleam_decode)
+[![Hex.pm](https://img.shields.io/hexpm/v/gleam_decode)](https://hex.pm/packages/gleam_decode) [![HexDocs.pm](https://img.shields.io/badge/hex-docs-ff69b4)](https://hexdocs.pm/gleam_decode/)
 
 A Gleam library for transforming Erlang or Elixir data into Gleam data.
 
@@ -118,16 +118,6 @@ pub fn erl_create_user() -> Result(User, String) {
 ```
 
 
-## Documentation
-
-Although Gleam does not yet have a documentation generation tool, the public API
-for this library is documented in the source code! Check out `src/decode.gleam`.
-
-If after reading the source documentation you still need help, or are dealing
-with a decoding problem that you don't believe is solvable with the current API,
-please open an issue!
-
-
 ## Installation
 
 Add `gleam_decode` to the deps section of your `rebar.config` file.
@@ -137,6 +127,13 @@ Add `gleam_decode` to the deps section of your `rebar.config` file.
     {gleam_decode, "1.3.0"}
 ]}.
 ```
+
+
+## Need help?
+
+If you are having trouble understanding how to use this library, or find
+yourself dealing with a decoding problem that you don't believe is solvable with
+the current API, please open an issue!
 
 
 ## Credit
