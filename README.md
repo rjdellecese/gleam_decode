@@ -109,11 +109,11 @@ fn external erl_external_get_user() -> Dynamic
 // And finally, we write the functions that perform the decoding!
 pub fn ex_create_user() -> Result(User, String) {
   ex_external_create_user()
-  |> decode_dynamic(_, ex_user_decoder())
+  |> decode_dynamic(ex_user_decoder())
 
 pub fn erl_create_user() -> Result(User, String) {
   erl_external_create_user()
-  |> decode_dynamic(_, erl_user_decoder())
+  |> decode_dynamic(erl_user_decoder())
 }
 ```
 
