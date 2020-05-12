@@ -6,8 +6,7 @@
               {env,[]},
               {modules,[]},
               {licenses,["Apache 2.0"]},
-              {links,[{"Documentation","https://hexdocs.pm/gleam_decode/"},
-                      {"GitHub","https://github.com/rjdellecese/gleam_decode"},
+              {links,[{"GitHub","https://github.com/rjdellecese/gleam_decode"},
                       {"Changelog",
                        "https://github.com/rjdellecese/gleam_decode/blob/master/CHANGELOG.md"}]},
               {include_files,["gleam.toml","gen/src"]}]}.
