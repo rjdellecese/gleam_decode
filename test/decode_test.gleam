@@ -2,7 +2,6 @@ import decode.{
   atom, atom_field, bool, decode_dynamic, dynamic, element, fail, field, float, from_result,
   int, list, map, map2, ok_error_tuple, one_of, string, succeed, then,
 }
-
 import gleam/atom as atom_mod
 import gleam/dynamic.{Dynamic} as dynamic_mod
 import gleam/should
