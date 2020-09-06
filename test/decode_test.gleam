@@ -1,4 +1,8 @@
-import decode.{atom, atom_field, bool, decode_dynamic, dynamic, element, fail, field, float, from_result, int, list, map, map2, ok_error_tuple, one_of, string, succeed, then}
+import decode.{
+  atom, atom_field, bool, decode_dynamic, dynamic, element, fail, field, float, from_result,
+  int, list, map, map2, ok_error_tuple, one_of, string, succeed, then,
+}
+
 import gleam/atom as atom_mod
 import gleam/dynamic.{Dynamic} as dynamic_mod
 import gleam/should
@@ -96,16 +100,18 @@ type Pet {
 }
 
 pub fn one_of_test() {
-  let cat_decoder = map2(
-    fn(name, poise) { Cat(name, poise) },
-    element(0, string()),
-    element(1, int()),
-  )
-  let dog_decoder = map2(
-    fn(name, loyalty) { Dog(name, loyalty) },
-    element(0, string()),
-    element(1, float()),
-  )
+  let cat_decoder =
+    map2(
+      fn(name, poise) { Cat(name, poise) },
+      element(0, string()),
+      element(1, int()),
+    )
+  let dog_decoder =
+    map2(
+      fn(name, loyalty) { Dog(name, loyalty) },
+      element(0, string()),
+      element(1, float()),
+    )
   let pet_decoder = one_of([cat_decoder, dog_decoder])
 
   let fifi_tuple = tuple("Fifi", 100)
@@ -177,7 +183,8 @@ pub fn then_and_from_result_test() {
       _string -> Error("Neither left nor right!")
     }
   }
-  let valid_string_decoder = string()
+  let valid_string_decoder =
+    string()
     |> then(compose(validate_left_or_right, from_result))
 
   "up"

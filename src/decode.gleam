@@ -41,10 +41,7 @@ pub fn string() -> Decoder(String) {
 
 // NESTED DATA
 /// Create a decoder that retrieves an element in a tuple at the given position.
-pub fn element(
-  at position: Int,
-  with decoder: Decoder(value),
-) -> Decoder(value) {
+pub fn element(at position: Int, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
 
   let fun = fn(dynamic) {
@@ -78,18 +75,14 @@ pub fn field(named: a, with decoder: Decoder(value)) -> Decoder(value) {
 /// Atoms are commonly used as map fields in Erlang and Elixir; when accessing
 /// map keys that are atoms, this saves you the trouble of having to handle atom
 /// creation/error handling yourself.
-pub fn atom_field(
-  named: String,
-  with decoder: Decoder(value),
-) -> Decoder(value) {
+pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value) {
   let Decoder(decode_fun) = decoder
-  let named_result = atom_mod.from_string(named)
-    |> result.map_error(
-      fn(_a) {
-        string_mod.append("No atom key by name of `", named)
-        |> string_mod.append("` found")
-      },
-    )
+  let named_result =
+    atom_mod.from_string(named)
+    |> result.map_error(fn(_a) {
+      string_mod.append("No atom key by name of `", named)
+      |> string_mod.append("` found")
+    })
 
   let fun = fn(dynamic) {
     named_result
@@ -142,10 +135,11 @@ fn try_decoders(
   decoders: List(Decoder(a)),
 ) -> Result(a, String) {
   case decoders {
-    [Decoder(decode_fun), ..remaining_decoders] -> case decode_fun(dynamic) {
-      Ok(val) -> Ok(val)
-      Error(_str) -> try_decoders(dynamic, remaining_decoders)
-    }
+    [Decoder(decode_fun), ..remaining_decoders] ->
+      case decode_fun(dynamic) {
+        Ok(val) -> Ok(val)
+        Error(_str) -> try_decoders(dynamic, remaining_decoders)
+      }
     [] -> Error("All decoders failed")
   }
 }
@@ -170,13 +164,11 @@ pub fn then(
   let Decoder(decode_fun) = decoder
   let unwrapped_decoder_fun = function.compose(fun, unwrap)
 
-  Decoder(
-    fn(dynamic) {
-      dynamic
-      |> decode_fun
-      |> result.then(fn(a) { unwrapped_decoder_fun(a)(dynamic) })
-    },
-  )
+  Decoder(fn(dynamic) {
+    dynamic
+    |> decode_fun
+    |> result.then(fn(a) { unwrapped_decoder_fun(a)(dynamic) })
+  })
 }
 
 /// Create a decoder from a `Result`. Useful whenn used with `then` to transform
@@ -299,9 +291,9 @@ pub fn map4(
   let Decoder(decode_fun4) = decoder4
 
   let mapped_fun = fn(dynamic) {
-    case decode_fun1(
+    case decode_fun1(dynamic), decode_fun2(dynamic), decode_fun3(dynamic), decode_fun4(
       dynamic,
-    ), decode_fun2(dynamic), decode_fun3(dynamic), decode_fun4(dynamic) {
+    ) {
       Ok(a), Ok(b), Ok(c), Ok(d) -> Ok(fun(a, b, c, d))
       Error(str), _, _, _ -> Error(str)
       _, Error(str), _, _ -> Error(str)
@@ -328,11 +320,9 @@ pub fn map5(
   let Decoder(decode_fun5) = decoder5
 
   let mapped_fun = fn(dynamic) {
-    case decode_fun1(
+    case decode_fun1(dynamic), decode_fun2(dynamic), decode_fun3(dynamic), decode_fun4(
       dynamic,
-    ), decode_fun2(
-      dynamic,
-    ), decode_fun3(dynamic), decode_fun4(dynamic), decode_fun5(dynamic) {
+    ), decode_fun5(dynamic) {
       Ok(a), Ok(b), Ok(c), Ok(d), Ok(e) -> Ok(fun(a, b, c, d, e))
       Error(str), _, _, _, _ -> Error(str)
       _, Error(str), _, _, _ -> Error(str)
@@ -362,13 +352,9 @@ pub fn map6(
   let Decoder(decode_fun6) = decoder6
 
   let mapped_fun = fn(dynamic) {
-    case decode_fun1(
+    case decode_fun1(dynamic), decode_fun2(dynamic), decode_fun3(dynamic), decode_fun4(
       dynamic,
-    ), decode_fun2(
-      dynamic,
-    ), decode_fun3(
-      dynamic,
-    ), decode_fun4(dynamic), decode_fun5(dynamic), decode_fun6(dynamic) {
+    ), decode_fun5(dynamic), decode_fun6(dynamic) {
       Ok(a), Ok(b), Ok(c), Ok(d), Ok(e), Ok(f) -> Ok(fun(a, b, c, d, e, f))
       Error(str), _, _, _, _, _ -> Error(str)
       _, Error(str), _, _, _, _ -> Error(str)
@@ -401,20 +387,11 @@ pub fn map7(
   let Decoder(decode_fun7) = decoder7
 
   let mapped_fun = fn(dynamic) {
-    case decode_fun1(
-      dynamic,
-    ), decode_fun2(
-      dynamic,
-    ), decode_fun3(
-      dynamic,
-    ), decode_fun4(
+    case decode_fun1(dynamic), decode_fun2(dynamic), decode_fun3(dynamic), decode_fun4(
       dynamic,
     ), decode_fun5(dynamic), decode_fun6(dynamic), decode_fun7(dynamic) {
-      Ok(
-        a,
-      ), Ok(
-        b,
-      ), Ok(c), Ok(d), Ok(e), Ok(f), Ok(g) -> Ok(fun(a, b, c, d, e, f, g))
+      Ok(a), Ok(b), Ok(c), Ok(d), Ok(e), Ok(f), Ok(g) ->
+        Ok(fun(a, b, c, d, e, f, g))
       Error(str), _, _, _, _, _, _ -> Error(str)
       _, Error(str), _, _, _, _, _ -> Error(str)
       _, _, Error(str), _, _, _, _ -> Error(str)
@@ -449,24 +426,13 @@ pub fn map8(
   let Decoder(decode_fun8) = decoder8
 
   let mapped_fun = fn(dynamic) {
-    case decode_fun1(
+    case decode_fun1(dynamic), decode_fun2(dynamic), decode_fun3(dynamic), decode_fun4(
       dynamic,
-    ), decode_fun2(
+    ), decode_fun5(dynamic), decode_fun6(dynamic), decode_fun7(dynamic), decode_fun8(
       dynamic,
-    ), decode_fun3(
-      dynamic,
-    ), decode_fun4(
-      dynamic,
-    ), decode_fun5(
-      dynamic,
-    ), decode_fun6(dynamic), decode_fun7(dynamic), decode_fun8(dynamic) {
-      Ok(
-        a,
-      ), Ok(
-        b,
-      ), Ok(
-        c,
-      ), Ok(d), Ok(e), Ok(f), Ok(g), Ok(h) -> Ok(fun(a, b, c, d, e, f, g, h))
+    ) {
+      Ok(a), Ok(b), Ok(c), Ok(d), Ok(e), Ok(f), Ok(g), Ok(h) ->
+        Ok(fun(a, b, c, d, e, f, g, h))
       Error(str), _, _, _, _, _, _, _ -> Error(str)
       _, Error(str), _, _, _, _, _, _ -> Error(str)
       _, _, Error(str), _, _, _, _, _ -> Error(str)
