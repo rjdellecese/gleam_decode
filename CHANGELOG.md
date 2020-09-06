@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+## v1.5.0 - 2020-05-11
+
+### Changed
+
+- Gleam version to 0.11.2 and `gleam_stdlib` version to 0.11.0.
+
 ## v1.4.0 - 2020-05-11
 
 ### Added
