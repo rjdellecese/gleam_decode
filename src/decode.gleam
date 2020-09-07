@@ -96,11 +96,7 @@ pub fn atom_field(named: String, with decoder: Decoder(value)) -> Decoder(value)
 /// Create a decoder for decoding a list of values.
 pub fn list(with decoder: Decoder(value)) -> Decoder(List(value)) {
   let Decoder(decode_fun) = decoder
-
-  let list_fun = fn(dynamic) {
-    dynamic
-    |> dynamic_mod.list(decode_fun)
-  }
+  let list_fun = dynamic_mod.typed_list(_, decode_fun)
 
   Decoder(list_fun)
 }
