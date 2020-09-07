@@ -4,6 +4,7 @@ import decode.{
 }
 import gleam/atom as atom_mod
 import gleam/dynamic.{Dynamic} as dynamic_mod
+import gleam/function
 import gleam/should
 import gleam/int as int_mod
 import gleam/map as map_mod
@@ -161,14 +162,6 @@ pub fn fail_test() {
   |> should.equal(Error("This will always fail"))
 }
 
-// TODO: Use the stdlib version of this if/when it becomes available.
-fn compose(first_fun: fn(a) -> b, second_fun: fn(b) -> c) -> fn(a) -> c {
-  fn(a) {
-    first_fun(a)
-    |> second_fun
-  }
-}
-
 type Direction {
   Left
   Right
@@ -184,7 +177,7 @@ pub fn then_and_from_result_test() {
   }
   let valid_string_decoder =
     string()
-    |> then(compose(validate_left_or_right, from_result))
+    |> then(function.compose(validate_left_or_right, from_result))
 
   "up"
   |> dynamic_mod.from
