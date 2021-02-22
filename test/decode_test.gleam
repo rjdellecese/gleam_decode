@@ -193,7 +193,7 @@ pub fn then_and_from_result_test() {
 type ForeignFunctionResult {
   Success(Int)
   Failure(String)
-  Error
+  Err
 }
 
 pub fn ok_error_tuple_test() {
@@ -202,7 +202,7 @@ pub fn ok_error_tuple_test() {
 
   let decode_foreign_function_result = fn(result: Dynamic) {
     decode_dynamic(result, ok_error_tuple(ok_decoder, error_decoder))
-    |> result_mod.unwrap(Error)
+    |> result_mod.unwrap(Err)
   }
 
   let ok_atom = atom_mod.create_from_string("ok")
@@ -218,10 +218,10 @@ pub fn ok_error_tuple_test() {
   |> decode_foreign_function_result
   |> should.equal(Failure("Something went predictably wrong!"))
 
-  // A decoding error becomes an Error record (variant) of the
+  // A decoding error becomes an Err record (variant) of the
   // ForeignFunctionResult type
   ["Uh oh.", "Something went unpredictably wrong!"]
   |> dynamic_mod.from
   |> decode_foreign_function_result
-  |> should.equal(Error)
+  |> should.equal(Err)
 }
