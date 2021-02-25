@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+## v1.6.0 - 2021-02-25
+
+### Changed
+
+- Gleam version to 0.14.0 and `gleam_stdlib` version to 0.14.0.
+- Relaxed `gleam_stdlib` version constraints in `rebar.config`.
+
 ## v1.5.1 - 2020-09-07
 
 ### Fixed
@@ -40,8 +47,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- An `ok_error_tuple` decoder for decoding `ok`/`error` tuples, (e.g. `{ok,
-  Success}`/`{error, Failure}`).
+- An `ok_error_tuple` decoder for decoding `ok`/`error` tuples, (e.g. `{ok, Success}`/`{error, Failure}`).
 
 ## v1.1.0 - 2019-12-28
 
