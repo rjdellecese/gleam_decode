@@ -1,1 +1,2 @@
 name = "gleam_decode"
+repository = { type = "github", user = "rjdellecese", repo = "gleam_decode" }
