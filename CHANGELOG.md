@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+## v1.7.0 - 2021-02-27
+
+### Added
+
+- `bit_string` decoder for decoding `BitString`s.
+
 ## v1.6.0 - 2021-02-25
 
 ### Changed

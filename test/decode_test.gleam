@@ -1,6 +1,7 @@
 import decode.{
-  atom, atom_field, bool, decode_dynamic, dynamic, element, fail, field, float, from_result,
-  int, list, map, map2, ok_error_tuple, one_of, string, succeed, then,
+  atom, atom_field, bit_string, bool, decode_dynamic, dynamic, element, fail, field,
+  float, from_result, int, list, map, map2, ok_error_tuple, one_of, string, succeed,
+  then,
 }
 import gleam/atom as atom_mod
 import gleam/dynamic.{Dynamic} as dynamic_mod
@@ -45,6 +46,13 @@ pub fn string_test() {
   |> dynamic_mod.from
   |> decode_dynamic(string())
   |> should.equal(Ok("string"))
+}
+
+pub fn bit_string_test() {
+  <<"bit_string":utf8>>
+  |> dynamic_mod.from
+  |> decode_dynamic(bit_string())
+  |> should.equal(Ok(<<"bit_string":utf8>>))
 }
 
 pub fn element_test() {

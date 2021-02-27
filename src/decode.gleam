@@ -39,6 +39,12 @@ pub fn string() -> Decoder(String) {
   Decoder(dynamic_mod.string)
 }
 
+/// Create a decoder that will attempt to transform a `Dynamic` into a
+/// `BitString`.
+pub fn bit_string() -> Decoder(BitString) {
+  Decoder(dynamic_mod.bit_string)
+}
+
 // NESTED DATA
 /// Create a decoder that retrieves an element in a tuple at the given position.
 pub fn element(at position: Int, with decoder: Decoder(value)) -> Decoder(value) {

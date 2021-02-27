@@ -1,6 +1,6 @@
 {application,gleam_decode,
              [{description,"Transform Erlang or Elixir data into Gleam data"},
-              {vsn,"1.6.0"},
+              {vsn,"1.7.0"},
               {registered,[]},
               {applications,[kernel,stdlib]},
               {env,[]},
