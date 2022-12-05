@@ -1,3 +1,5 @@
+# :warning: Use `gleam/dynamic` from the [Gleam standard library](https://github.com/gleam-lang/stdlib) instead! :warning:
+
 # decode
 
 [![Hex.pm](https://img.shields.io/hexpm/v/gleam_decode)](https://hex.pm/packages/gleam_decode) [![HexDocs.pm](https://img.shields.io/badge/hex-docs-ff69b4)](https://hexdocs.pm/gleam_decode/)
